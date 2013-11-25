@@ -2,7 +2,7 @@
     "name": "molajo/route",
     "description": "Molajo Route Services for PHP Applications",
     "version": "0.1.0",
-    "type": "molajo-bundle",
+    "type": "molajo-package",
     "keywords": ["route", "commonapi", "molajo"],
     "homepage": "http://github.com/Molajo/Route",
     "license": "MIT",
@@ -10,8 +10,7 @@
         {
             "name": "Amy Stephen",
             "email": "AmyStephen@molajo.org",
-            "homepage": "http://AmyStephen.com",
-            "role": "Developer"
+            "homepage": "http://AmyStephen.com"
         }
     ],
     "support": {
