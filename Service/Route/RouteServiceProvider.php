@@ -51,7 +51,7 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
         $options = array();
 
         $this->dependencies                = array();
-        $this->dependencies['Resources']   = $options;
+        $this->dependencies['Resource']   = $options;
         $this->dependencies['Request']     = $options;
         $this->dependencies['Runtimedata'] = $options;
 
@@ -66,9 +66,9 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
      * @return  $this
      * @since   1.0
      */
-    public function processFulfilledDependencies(array $dependency_instances = null)
+    public function onBeforeInstantiation(array $dependency_instances = null)
     {
-        parent::processFulfilledDependencies($dependency_instances);
+        parent::onBeforeInstantiation($dependency_instances);
 
         $this->dependencies['Filters'] = $this->getApplicationFilters();
 
@@ -106,7 +106,7 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
         $route->route_found                       = null;
         $this->dependencies['Runtimedata']->route = $route;
 
-        $query = $this->dependencies['Resources']->get(
+        $query = $this->dependencies['Resource']->get(
             'query:///Molajo//Datasource//Catalog.xml',
             array('runtime_data' => $this->dependencies['Runtimedata'])
         );
@@ -157,7 +157,7 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
      */
     public function getApplicationFilters()
     {
-        $f = $this->dependencies['Resources']->get('xml:///Molajo//Application//Filters.xml');
+        $f = $this->dependencies['Resource']->get('xml:///Molajo//Application//Filters.xml');
 
         $filters = array();
         foreach ($f->filter as $t) {
