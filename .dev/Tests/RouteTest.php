@@ -1,27 +1,27 @@
 <?php
 /**
- * Database Test
+ * Route Test
  *
  * @package    Molajo
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @copyright  2013 Amy Stephen. All rights reserved.
  */
-namespace Molajo\Database\Test;
+namespace Molajo\Route\Test;
 
 /**
- * Database Test
+ * Route Test
  *
  * @author     Amy Stephen
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @copyright  2013 Amy Stephen. All rights reserved.
  * @since      1.0
  */
-class DatabaseTest extends \PHPUnit_Framework_TestCase
+class RouteTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Object
      */
-    protected $database_model;
+    protected $route_model;
 
     /**
      * Initialises Adapter
