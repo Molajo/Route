@@ -20,10 +20,10 @@ $classmap = createClassMap($base . '/vendor/commonapi/route', 'CommonApi\\Route\
 $results  = createClassMap($base . '/vendor/commonapi/exception', 'CommonApi\\Exception\\');
 $classmap = array_merge($classmap, $results);
 
-$results  = createClassMap($base . '/Handler', 'Molajo\\Render\\Handler\\');
+$results  = createClassMap($base . '/Source/Handler', 'Molajo\\Render\\Handler\\');
 $classmap = array_merge($classmap, $results);
 
-$classmap['Molajo\\Render\\Adapter']    = $base . '/Adapter.php';
+$classmap['Molajo\\Render\\Adapter']    = $base . '/Source/Adapter.php';
 ksort($classmap);
 
 spl_autoload_register(
