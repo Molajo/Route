@@ -9,7 +9,7 @@
 namespace Molajo\Route\Handler;
 
 use CommonApi\Route\RouteInterface;
-use Exception\Route\RouteException;
+use CommonApi\Exception\RuntimeException;
 
 /**
  * Abstract Route Handler
@@ -68,7 +68,7 @@ abstract class AbstractHandler implements RouteInterface
      * Determine if secure protocol required and in use
      *
      * @return  object
-     * @throws  \Exception\Route\RouteException
+     * @throws  \CommonApi\Exception\RuntimeException
      * @since   1.0
      */
     public function verifySecureProtocol()
@@ -91,7 +91,7 @@ abstract class AbstractHandler implements RouteInterface
      * Determine if request is for home page
      *
      * @return  object
-     * @throws  \Exception\Route\RouteException
+     * @throws  \CommonApi\Exception\RuntimeException
      * @since   1.0
      */
     public function verifyHome()
@@ -133,7 +133,7 @@ abstract class AbstractHandler implements RouteInterface
      * Set Request
      *
      * @return  $this
-     * @throws  \Exception\Route\RouteException
+     * @throws  \CommonApi\Exception\RuntimeException
      * @since   1.0
      */
     public function setRequest()
@@ -150,7 +150,7 @@ abstract class AbstractHandler implements RouteInterface
      * Set Action from HTTP Method
      *
      * @return  $this
-     * @throws  \Exception\Route\RouteException
+     * @throws  \CommonApi\Exception\RuntimeException
      * @since   1.0
      */
     protected function setAction()
@@ -179,7 +179,7 @@ abstract class AbstractHandler implements RouteInterface
      * Set Path
      *
      * @return  $this
-     * @throws  \Exception\Route\RouteException
+     * @throws  \CommonApi\Exception\RuntimeException
      * @since   1.0
      */
     protected function setBaseUrl()
@@ -193,7 +193,7 @@ abstract class AbstractHandler implements RouteInterface
      * Set Path
      *
      * @return  $this
-     * @throws  \Exception\Route\RouteException
+     * @throws  \CommonApi\Exception\RuntimeException
      * @since   1.0
      */
     protected function setPath()
@@ -207,7 +207,7 @@ abstract class AbstractHandler implements RouteInterface
      * Set Request Variables
      *
      * @return  $this
-     * @throws  \Exception\Route\RouteException
+     * @throws  \CommonApi\Exception\RuntimeException
      * @since   1.0
      */
     protected function setRequestVariables()
@@ -319,7 +319,7 @@ abstract class AbstractHandler implements RouteInterface
      * Set Route
      *
      * @return  object
-     * @throws  \Exception\Route\RouteException
+     * @throws  \CommonApi\Exception\RuntimeException
      * @since   1.0
      */
     public function setRoute()

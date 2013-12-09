@@ -8,11 +8,10 @@
  */
 namespace Molajo\Route\Handler;
 
-use stdClass;
 use Exception;
 use Molajo\Controller\ReadController;
 use CommonApi\Route\RouteInterface;
-use Exception\Route\RouteException;
+use CommonApi\Exception\RuntimeException;
 
 /**
  * Database Handler for Route
@@ -64,7 +63,7 @@ class Database extends AbstractHandler implements RouteInterface
      *
      * @return  object
      * @since   1.0
-     * @throws  \Exception\Route\RouteException
+     * @throws  \CommonApi\Exception\RuntimeException
      */
     public function setRoute()
     {
@@ -143,7 +142,7 @@ class Database extends AbstractHandler implements RouteInterface
             $item = $this->resource_query->getData();
 
         } catch (Exception $e) {
-            throw new RouteException ($e->getMessage());
+            throw new RuntimeException ($e->getMessage());
         }
 
         $this->runtime_data->route->model_registry = $this->resource_query->getModelRegistry('*');

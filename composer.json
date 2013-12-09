@@ -24,6 +24,8 @@
         "commonapi/route": "dev-master"
     },
     "autoload": {
-        "classmap": "./"
+        "psr-0": {
+            "Molajo\\Route": "./"
+        }
     }
 }

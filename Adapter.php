@@ -9,7 +9,7 @@
 namespace Molajo\Route;
 
 use CommonApi\Route\RouteInterface;
-use Exception\Route\RouteException;
+use CommonApi\Exception\RuntimeException;
 
 /**
  * Adapter for Route
@@ -46,7 +46,6 @@ class Adapter implements RouteInterface
      * Determine if secure protocol required and in use
      *
      * @return  object
-     * @throws  \Exception\Route\RouteException
      * @since   1.0
      */
     public function verifySecureProtocol()
@@ -58,7 +57,6 @@ class Adapter implements RouteInterface
      * Determine if request is for home page
      *
      * @return  object
-     * @throws  \Exception\Route\RouteException
      * @since   1.0
      */
     public function verifyHome()
@@ -70,7 +68,6 @@ class Adapter implements RouteInterface
      * Set Action from HTTP Method
      *
      * @return  object
-     * @throws  \Exception\Route\RouteException
      * @since   1.0
      */
     public function setRequest()
@@ -82,7 +79,6 @@ class Adapter implements RouteInterface
      * Set Route
      *
      * @return  object
-     * @throws  \Exception\Route\RouteException
      * @since   1.0
      */
     public function setRoute()
