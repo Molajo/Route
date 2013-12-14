@@ -23,7 +23,7 @@ $classmap = array_merge($classmap, $results);
 $results  = createClassMap($base . '/Source/Handler', 'Molajo\\Render\\Handler\\');
 $classmap = array_merge($classmap, $results);
 
-$classmap['Molajo\\Render\\Adapter']    = $base . '/Source/Adapter.php';
+$classmap['Molajo\\Render\\Adapter'] = $base . '/Source/Adapter.php';
 ksort($classmap);
 
 spl_autoload_register(

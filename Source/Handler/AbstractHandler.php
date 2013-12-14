@@ -59,9 +59,9 @@ abstract class AbstractHandler implements RouteInterface
         $parameters,
         array $filters = array()
     ) {
-        $this->request    = $request;
+        $this->request      = $request;
         $this->runtime_data = $parameters;
-        $this->filters    = $filters;
+        $this->filters      = $filters;
     }
 
     /**
@@ -102,7 +102,7 @@ abstract class AbstractHandler implements RouteInterface
             || trim($this->runtime_data->application->path) == ''
         ) {
             $this->runtime_data->route->catalog_id
-                                           = $this->runtime_data->application->parameters->application_home_catalog_id;
+                                             = $this->runtime_data->application->parameters->application_home_catalog_id;
             $this->runtime_data->route->home = 1;
 
             return $this->runtime_data;
@@ -111,7 +111,7 @@ abstract class AbstractHandler implements RouteInterface
         if ($this->runtime_data->application->path == '/') {
             $this->runtime_data->error_code = 301;
             $this->runtime_data->redirect_to_id
-                                          = $this->runtime_data->application->parameters->application_home_catalog_id;
+                                            = $this->runtime_data->application->parameters->application_home_catalog_id;
             return $this->runtime_data;
         }
 
@@ -122,7 +122,7 @@ abstract class AbstractHandler implements RouteInterface
         ) {
             $this->runtime_data->error_code = 301;
             $this->runtime_data->redirect_to_id
-                                          = $this->runtime_data->application->parameters->application_home_catalog_id;
+                                            = $this->runtime_data->application->parameters->application_home_catalog_id;
             return $this->runtime_data;
         }
 

@@ -51,7 +51,7 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
         $options = array();
 
         $this->dependencies                = array();
-        $this->dependencies['Resource']   = $options;
+        $this->dependencies['Resource']    = $options;
         $this->dependencies['Request']     = $options;
         $this->dependencies['Runtimedata'] = $options;
 

@@ -174,7 +174,7 @@ class Database extends AbstractHandler implements RouteInterface
                 $this->runtime_data->route->model_name = ucfirst(strtolower($item->b_model_name));
                 $this->runtime_data->route->model_type = ucfirst(strtolower($item->b_model_type));
                 $this->runtime_data->route->model_registry_name
-                                                     = $this->runtime_data->route->model_name . $this->runtime_data->route->model_type;
+                                                       = $this->runtime_data->route->model_name . $this->runtime_data->route->model_type;
             }
         }
 
