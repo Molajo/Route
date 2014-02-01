@@ -21,11 +21,13 @@
     },
     "require": {
         "php": ">=5.4",
-        "commonapi/route": "dev-master"
+        "commonapi/route": "dev-master",
+        "molajo/database": "dev-master"
     },
     "autoload": {
         "psr-4": {
-            "Molajo\\Route": "./"
+            "Molajo\\Service\\": "Service/",
+            "Molajo\\Route\\": "Source/"
         }
     }
 }
