@@ -8,8 +8,9 @@
  */
 namespace Molajo\Route\Handler;
 
-use CommonApi\Route\RouteInterface;
 use CommonApi\Exception\RuntimeException;
+use CommonApi\Route\RouteInterface;
+use stdClass;
 
 /**
  * Abstract Route Handler
@@ -30,12 +31,60 @@ abstract class AbstractHandler implements RouteInterface
     protected $request;
 
     /**
-     * Parameters
+     * Page Type
      *
-     * @var    object $parameters
+     * @var    string
      * @since  1.0
      */
-    protected $parameters;
+    protected $page_type = null;
+
+    /**
+     * Force SSL Indicator
+     *
+     * @var    int
+     * @since  1.0
+     */
+    protected $url_force_ssl;
+
+    /**
+     * Application Home Catalog ID
+     *
+     * @var    int
+     * @since  1.0
+     */
+    protected $application_home_catalog_id;
+
+    /**
+     * Application Path
+     *
+     * @var    int
+     * @since  1.0
+     */
+    protected $application_path;
+
+    /**
+     * Application ID
+     *
+     * @var    int
+     * @since  1.0
+     */
+    protected $application_id;
+
+    /**
+     * Base URL
+     *
+     * @var    int
+     * @since  1.0
+     */
+    protected $base_url;
+
+    /**
+     * Task to Action
+     *
+     * @var    array
+     * @since  1.0
+     */
+    protected $task_to_action;
 
     /**
      * Filters
@@ -46,22 +95,64 @@ abstract class AbstractHandler implements RouteInterface
     protected $filters;
 
     /**
+     * Route
+     *
+     * @var    object
+     * @since  1.0
+     */
+    protected $route;
+
+    /**
      * Constructor
      *
-     * @param  object $request
-     * @param  object $parameters
-     * @param  array  $filters
+     * @param   object $request
+     * @param   int    $url_force_ssl
+     * @param   int    $application_home_catalog_id
+     * @param   string $application_path
+     * @param   int    $application_id
+     * @param   string $base_url
+     * @param   array  $task_to_action
+     * @param   array  $filters
      *
      * @since   1.0
      */
     public function __construct(
         $request,
-        $parameters,
+        $url_force_ssl,
+        $application_home_catalog_id,
+        $application_path,
+        $application_id,
+        $base_url,
+        array $task_to_action = array(),
         array $filters = array()
     ) {
-        $this->request      = $request;
-        $this->runtime_data = $parameters;
-        $this->filters      = $filters;
+        $this->request                     = $request;
+        $this->url_force_ssl               = $url_force_ssl;
+        $this->application_home_catalog_id = $application_home_catalog_id;
+        $this->application_path            = $application_path;
+        $this->application_id              = $application_id;
+        $this->base_url                    = $base_url;
+        $this->task_to_action              = $task_to_action;
+        $this->filters                     = $filters;
+
+        $this->route                      = new stdClass();
+        $this->route->route_found         = null;
+        $this->route->error_code          = 0;
+        $this->route->redirect_to_url     = null;
+        $this->route->home                = 0;
+        $this->route->catalog_id          = 0;
+        $this->route->action              = '';
+        $this->route->method              = '';
+        $this->route->base_url            = '';
+        $this->route->path                = '';
+        $this->route->filters_array       = array();
+        $this->route->post_variable_array = array();
+        $this->route->request_task        = '';
+        $this->route->request_task_values = array();
+        $this->route->model_name          = '';
+        $this->route->model_type          = '';
+        $this->route->model_registry_name = '';
+        $this->route->page_type           = '';
     }
 
     /**
@@ -73,18 +164,18 @@ abstract class AbstractHandler implements RouteInterface
      */
     public function verifySecureProtocol()
     {
-        if ((int)$this->runtime_data->application->parameters->url_force_ssl == 0) {
-            return $this->runtime_data;
+        if ((int)$this->url_force_ssl == 0) {
+            return $this->route;
         }
 
         if ((int)$this->request->is_secure == 1) {
-            return $this->runtime_data;
+            return $this->route;
         }
 
-        $this->runtime_data->error_code      = 301;
-        $this->runtime_data->redirect_to_url = $this->runtime_data->application->parameters->application_home_catalog_id;
+        $this->route->error_code      = 301;
+        $this->route->redirect_to_url = $this->application_home_catalog_id;
 
-        return $this->runtime_data;
+        return $this->route;
     }
 
     /**
@@ -96,43 +187,40 @@ abstract class AbstractHandler implements RouteInterface
      */
     public function verifyHome()
     {
-        $this->runtime_data->route->home = 0;
-
-        if (strlen($this->runtime_data->application->path) == 0
-            || trim($this->runtime_data->application->path) == ''
+        if (strlen($this->application_path) == 0
+            || trim($this->application_path) == ''
         ) {
-            $this->runtime_data->route->catalog_id
-                                             = $this->runtime_data->application->parameters->application_home_catalog_id;
-            $this->runtime_data->route->home = 1;
+            $this->route->catalog_id = $this->application_home_catalog_id;
+            $this->route->home       = 1;
 
-            return $this->runtime_data;
+            return $this->route;
         }
 
-        if ($this->runtime_data->application->path == '/') {
-            $this->runtime_data->error_code = 301;
-            $this->runtime_data->redirect_to_id
-                                            = $this->runtime_data->application->parameters->application_home_catalog_id;
-            return $this->runtime_data;
+        if ($this->application_path == '/') {
+            $this->route->error_code     = 301;
+            $this->route->redirect_to_id = $this->application_home_catalog_id;
+
+            return $this->route;
         }
 
-        if ($this->runtime_data->application->path == 'index.php'
-            || $this->runtime_data->application->path == 'index.php/'
-            || $this->runtime_data->application->path == 'index.php?'
-            || $this->runtime_data->application->path == '/index.php/'
+        if ($this->application_path == 'index.php'
+            || $this->application_path == 'index.php/'
+            || $this->application_path == 'index.php?'
+            || $this->application_path == '/index.php/'
         ) {
-            $this->runtime_data->error_code = 301;
-            $this->runtime_data->redirect_to_id
-                                            = $this->runtime_data->application->parameters->application_home_catalog_id;
-            return $this->runtime_data;
+            $this->route->error_code     = 301;
+            $this->route->redirect_to_id = $this->application_home_catalog_id;
+
+            return $this->route;
         }
 
-        return $this->runtime_data;
+        return $this->route;
     }
 
     /**
      * Set Request
      *
-     * @return  $this
+     * @return  object
      * @throws  \CommonApi\Exception\RuntimeException
      * @since   1.0
      */
@@ -140,10 +228,10 @@ abstract class AbstractHandler implements RouteInterface
     {
         $this->setAction();
         $this->setBaseUrl();
-        $this->setPath();
         $this->setRequestVariables();
+        $this->setPath();
 
-        return $this->runtime_data;
+        return $this->route;
     }
 
     /**
@@ -169,8 +257,8 @@ abstract class AbstractHandler implements RouteInterface
             $action = 'read';
         }
 
-        $this->runtime_data->route->action = $action;
-        $this->runtime_data->route->method = $method;
+        $this->route->action = $action;
+        $this->route->method = $method;
 
         return $this;
     }
@@ -184,23 +272,9 @@ abstract class AbstractHandler implements RouteInterface
      */
     protected function setBaseUrl()
     {
-        $this->runtime_data->route->base_url = $this->runtime_data->application->base_url;
+        $this->route->base_url = $this->base_url;
 
-        return $this;
-    }
-
-    /**
-     * Set Path
-     *
-     * @return  $this
-     * @throws  \CommonApi\Exception\RuntimeException
-     * @since   1.0
-     */
-    protected function setPath()
-    {
-        $this->runtime_data->route->path = $this->runtime_data->application->path;
-
-        return $this;
+        return $this->route;
     }
 
     /**
@@ -214,14 +288,11 @@ abstract class AbstractHandler implements RouteInterface
     {
         $post_variables = array();
 
-        if ($this->runtime_data->route->action == 'read') {
+        if ($this->route->action == 'read') {
             $this->setReadVariables();
         } else {
-            $post_variables = $this->runtime_data->route->post_variable_array;
             $this->setTaskVariables();
         }
-
-        $this->runtime_data->route->post_variable_array = $post_variables;
 
         return $this;
     }
@@ -234,7 +305,13 @@ abstract class AbstractHandler implements RouteInterface
      */
     protected function setReadVariables()
     {
-        $urlParts = explode(' / ', $this->runtime_data->route->path);
+        $urlParts = explode('/', $this->application_path);
+
+        if (count($this->request->query) > 0 && is_array($this->request->query)) {
+            foreach ($this->request->query as $parameter) {
+                $urlParts[] = $parameter;
+            }
+        }
 
         if (count($urlParts) == 0) {
             return $this;
@@ -245,29 +322,43 @@ abstract class AbstractHandler implements RouteInterface
         $filter      = '';
         $i           = 0;
 
-        foreach ($urlParts as $slug) {
+        $route_parameters = array();
 
-            if ($filter == '') {
-                if (in_array($slug, $this->filters)) {
-                    $filter = $slug;
+        if (count($urlParts) > 0 && is_array($urlParts)) {
+
+            $i    = count($urlParts) - 1;
+            $done = false;
+
+            while ($done === false) {
+
+                $test = $urlParts[$i];
+
+                $parsed = explode('=', $test);
+
+                if (in_array($parsed[0], $this->filters)) {
+                    $route_parameters[] = $test;
                 } else {
-                    if (trim($path) == '') {
-                    } else {
-                        $path .= '/';
-                    }
-                    $path .= $slug;
+                    $done = true;
                 }
-            } else {
-                if ($filterArray == '') {
-                } else {
-                    $filterArray .= ';';
+
+                $i = $i - 1;
+                if ($i < 0) {
+                    $done = true;
                 }
-                $filterArray .= $filter . ':' . $slug;
-                $filter = '';
             }
         }
 
-        $this->runtime_data->route->filters_array = $filterArray;
+        $this->route->filters_array = $route_parameters;
+
+        if (in_array('new', $route_parameters)) {
+            $this->page_type = 'new';
+
+        } elseif (in_array('edit', $route_parameters)) {
+            $this->page_type = 'edit';
+
+        } elseif (in_array('delete', $route_parameters)) {
+            $this->page_type = 'delete';
+        }
 
         return $this;
     }
@@ -280,7 +371,12 @@ abstract class AbstractHandler implements RouteInterface
      */
     protected function setTaskVariables()
     {
-        $urlParts = explode('/', $this->runtime_data->route->path);
+        if (count($this->request->parameters) > 0) {
+            foreach ($this->request->parameters as $parameter) {
+                $urlParts[] = $parameter;
+            }
+        }
+
         if (count($urlParts) == 0) {
             return $this;
         }
@@ -309,8 +405,33 @@ abstract class AbstractHandler implements RouteInterface
         }
 
         /** Map Action Verb (Tag, Favorite, etc.) to Permission Action (Update, Delete, etc.) */
-        $this->runtime_data->route->request_task        = $task;
-        $this->runtime_data->route->request_task_values = $action_target;
+        $this->route->request_task        = $task;
+        $this->route->request_task_values = $action_target;
+
+        return $this;
+    }
+
+    /**
+     * Set Path
+     *
+     * @return  $this
+     * @throws  \CommonApi\Exception\RuntimeException
+     * @since   1.0
+     */
+    protected function setPath()
+    {
+        $path = $this->application_path;
+
+        $remove = $this->route->filters_array;
+
+        if (is_array($remove) && count($remove) > 0) {
+            foreach ($remove as $item) {
+                $found = strrpos($path, '/' . $item);
+                $path  = substr($path, 0, $found);
+            }
+        }
+
+        $this->route->path = $path;
 
         return $this;
     }
@@ -324,7 +445,7 @@ abstract class AbstractHandler implements RouteInterface
      */
     public function setRoute()
     {
-        return $this->runtime_data();
+        return $this->route();
     }
 
     /**
@@ -335,8 +456,6 @@ abstract class AbstractHandler implements RouteInterface
      */
     public function setRedirect()
     {
-        $this->runtime_data->request_non_route_parameters = '';
-
         /**
          * @todo test with non-sef URLs
          * $sef = $this->runtime_data->configuration_sef_url', 1);

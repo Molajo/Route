@@ -20,11 +20,11 @@
         "source": "https://github.com/Molajo/Route"
     },
     "require": {
-        "php": ">=5.3.10",
+        "php": ">=5.4",
         "commonapi/route": "dev-master"
     },
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "Molajo\\Route": "./"
         }
     }

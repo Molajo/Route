@@ -8,11 +8,10 @@
  */
 namespace Molajo\Service\Route;
 
-use stdClass;
 use Exception;
-use Molajo\IoC\AbstractServiceProvider;
-use CommonApi\IoC\ServiceProviderInterface;
 use CommonApi\Exception\RuntimeException;
+use CommonApi\IoC\ServiceProviderInterface;
+use Molajo\IoC\AbstractServiceProvider;
 
 /**
  * Route Service Provider
@@ -102,9 +101,18 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
      */
     protected function getAdapterHandler()
     {
-        $route                                    = new stdClass();
-        $route->route_found                       = null;
-        $this->dependencies['Runtimedata']->route = $route;
+        $url_force_ssl
+            = $this->dependencies['Runtimedata']->application->parameters->url_force_ssl;
+        $application_home_catalog_id
+            = $this->dependencies['Runtimedata']->application->parameters->application_home_catalog_id;
+        $application_path
+            = $this->dependencies['Runtimedata']->application->path;
+        $application_id
+            = $this->dependencies['Runtimedata']->application->id;
+        $base_url
+            = $this->dependencies['Runtimedata']->application->base_url;
+        $task_to_action
+            = $this->dependencies['Runtimedata']->reference_data->task_to_action;
 
         $query = $this->dependencies['Resource']->get(
             'query:///Molajo//Datasource//Catalog.xml',
@@ -116,7 +124,12 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
         try {
             return new $class(
                 $this->dependencies['Request'],
-                $this->dependencies['Runtimedata'],
+                $url_force_ssl,
+                $application_home_catalog_id,
+                $application_path,
+                $application_id,
+                $base_url,
+                $task_to_action,
                 $this->dependencies['Filters'],
                 $query
             );

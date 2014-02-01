@@ -9,7 +9,6 @@
 namespace Molajo\Route;
 
 use CommonApi\Route\RouteInterface;
-use CommonApi\Exception\RuntimeException;
 
 /**
  * Adapter for Route

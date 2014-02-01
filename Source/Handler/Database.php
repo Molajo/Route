@@ -9,9 +9,9 @@
 namespace Molajo\Route\Handler;
 
 use Exception;
-use Molajo\Controller\ReadController;
-use CommonApi\Route\RouteInterface;
 use CommonApi\Exception\RuntimeException;
+use CommonApi\Route\RouteInterface;
+use Molajo\Controller\ReadController;
 
 /**
  * Database Handler for Route
@@ -34,22 +34,37 @@ class Database extends AbstractHandler implements RouteInterface
     /**
      * Constructor
      *
-     * @param  object         $request
-     * @param  object         $parameters
-     * @param  array          $filters
-     * @param  ReadController $resource_query
+     * @param   object         $request
+     * @param   int            $url_force_ssl
+     * @param   int            $application_home_catalog_id
+     * @param   string         $application_path
+     * @param   int            $application_id
+     * @param   string         $base_url
+     * @param   array          $task_to_action
+     * @param   array          $filters
+     * @param   ReadController $resource_query
      *
      * @since   1.0
      */
     public function __construct(
         $request,
-        $parameters,
+        $url_force_ssl,
+        $application_home_catalog_id,
+        $application_path,
+        $application_id,
+        $base_url,
+        array $task_to_action = array(),
         array $filters = array(),
         ReadController $resource_query
     ) {
         parent::__construct(
             $request,
-            $parameters,
+            $url_force_ssl,
+            $application_home_catalog_id,
+            $application_path,
+            $application_id,
+            $base_url,
+            $task_to_action,
             $filters
         );
 
@@ -108,7 +123,7 @@ class Database extends AbstractHandler implements RouteInterface
             . ' . '
             . $this->resource_query->model->database->qn('sef_request')
             . ' = '
-            . $this->resource_query->model->database->q($this->runtime_data->application->path)
+            . $this->resource_query->model->database->q($this->route->path)
         );
 
         /** Extension Join */
@@ -119,7 +134,7 @@ class Database extends AbstractHandler implements RouteInterface
             . ' . '
             . $this->resource_query->model->database->qn('application_id')
             . ' = '
-            . $this->resource_query->model->database->q($this->runtime_data->application->id)
+            . $this->resource_query->model->database->q($this->application_id)
         );
 
         $this->resource_query->model->query->where(
@@ -127,7 +142,7 @@ class Database extends AbstractHandler implements RouteInterface
             . ' . '
             . $this->resource_query->model->database->qn('page_type')
             . ' <> '
-            . $this->resource_query->model->database->q($this->runtime_data->reference_data->page_type_link)
+            . $this->resource_query->model->database->q('link')
         );
 
         $this->resource_query->model->query->where(
@@ -145,41 +160,45 @@ class Database extends AbstractHandler implements RouteInterface
             throw new RuntimeException ($e->getMessage());
         }
 
-        $this->runtime_data->route->model_registry = $this->resource_query->getModelRegistry('*');
+        $this->route->model_registry = $this->resource_query->getModelRegistry('*');
 
         /** 404 */
         if (count($item) == 0 || $item === false) {
-            $this->runtime_data->route->route_found = 0;
+            $this->route->route_found = 0;
 
-            return $this->runtime_data;
+            return $this->route;
         }
 
         /** Redirect */
         if ((int)$item->redirect_to_id == 0) {
         } else {
-            $this->runtime_data->redirect_to_id = (int)$item->redirect_to_id;
+            $this->route->redirect_to_id = (int)$item->redirect_to_id;
 
-            return $this->runtime_data;
+            return $this->route;
         }
 
         /** Found */
-        $this->runtime_data->route->route_found = 1;
-        $this->runtime_data->route->home        = 0;
+        $this->route->route_found = 1;
+        $this->route->home        = 0;
 
         foreach (\get_object_vars($item) as $key => $value) {
 
-            $this->runtime_data->route->$key = $value;
+            $this->route->$key = $value;
 
             if ($key == 'b_model_name') {
-                $this->runtime_data->route->model_name = ucfirst(strtolower($item->b_model_name));
-                $this->runtime_data->route->model_type = ucfirst(strtolower($item->b_model_type));
-                $this->runtime_data->route->model_registry_name
-                                                       = $this->runtime_data->route->model_name . $this->runtime_data->route->model_type;
+                $this->route->model_name          = ucfirst(strtolower($item->b_model_name));
+                $this->route->model_type          = ucfirst(strtolower($item->b_model_type));
+                $this->route->model_registry_name = $this->route->model_name . $this->route->model_type;
             }
         }
 
-        $this->runtime_data->route->catalog_id = $this->runtime_data->route->id;
+        $this->route->catalog_id = $this->route->id;
 
-        return $this->runtime_data;
+        if ($this->page_type === null) {
+        } elseif ($this->route->page_type === 'Item') {
+            $this->route->page_type = $this->page_type;
+        }
+
+        return $this->route;
     }
 }
