@@ -53,6 +53,7 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
         $this->dependencies['Resource']    = $options;
         $this->dependencies['Request']     = $options;
         $this->dependencies['Runtimedata'] = $options;
+        $this->dependencies['Authorisation'] = $options;
 
         return $this->dependencies;
     }
@@ -88,6 +89,114 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
         $this->service_instance = $this->getAdapter($handler);
 
         return $this;
+    }
+
+    /**
+     * Logic contained within this method is invoked after the Service Class construction
+     *  and can be used for setter logic or other post-construction processing
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    public function onAfterInstantiation()
+    {
+        $results = $this->service_instance->verifySecureProtocol();
+        if (isset($results->error_code) && (int)$results->error_code > 0) {
+            $this->service_instance = $results;
+            return $this;
+        }
+
+        $results = $this->service_instance->verifyHome();
+        if (isset($results->error_code) && (int)$results->error_code > 0) {
+            $this->service_instance = $results;
+            return $this;
+        }
+
+        $results = $this->service_instance->setRequest();
+        if (isset($results->error_code) && (int)$results->error_code > 0) {
+            $this->service_instance = $results;
+            return $this;
+        }
+
+        $results = $this->service_instance->setRoute();
+        if (isset($results->error_code) && (int)$results->error_code > 0) {
+            $this->service_instance = $results;
+            return $this;
+        }
+
+        $this->dependencies['Runtimedata']->page_type = $results->page_type;
+        $this->dependencies['Runtimedata']->route = $this->sortObject($results);
+
+        $this->service_instance = $results;
+
+        /** Step 3. Authorised to Access Site */
+        $options      = array(
+            'action_id'  => null,
+            'catalog_id' => null,
+            'type'       => 'Site'
+        );
+        $authorised = $this->dependencies['Authorisation']->isUserAuthorised($options);
+        if ($authorised === false) {
+//todo: finish authorisation
+            // 301 redirect
+        }
+
+        /** Step 3. Authorised to Access Application */
+        $options      = array(
+            'action_id'  => null,
+            'catalog_id' => $this->dependencies['Runtimedata']->application->catalog_id,
+            'type'       => 'Application'
+        );
+        $authorised = $this->dependencies['Authorisation']->isUserAuthorised($options);
+        if ($authorised === false) {
+            //todo: finish authorisation
+            // 301 redirect
+        }
+
+        /** Step 4. Authorised for Catalog */
+        $options    = array(
+            'action'     => $this->dependencies['Runtimedata']->route->action,
+            'catalog_id' => $this->dependencies['Runtimedata']->route->catalog_id,
+            'type'       => 'Catalog'
+        );
+
+        $authorised = $this->dependencies['Authorisation']->isUserAuthorised($options);
+        if ($authorised === false) {
+            // 301 redirect
+        }
+
+        /** Step 5. Validate if site is set to offline mode that user has access */
+        $options    = array(
+            'type' => 'OfflineMode'
+        );
+        $authorised = $this->dependencies['Authorisation']->isUserAuthorised($options);
+        if ($authorised === false) {
+            // 301 redirect
+        }
+
+        /** Step 3. Thresholds: Lockout */
+        // IP address
+        // Hits
+        // Time of day
+        // Visits
+        // Login Attempts
+        // Upload Limits
+        // CSFR
+        // Captcha Failure
+        return $this;
+    }
+
+    /**
+     * Service Provider Controller requests any Services (other than the current service) to be saved
+     *
+     * @return  array
+     * @since   1.0
+     */
+    public function setServices()
+    {
+        $this->set_services['Runtimedata'] = $this->dependencies['Runtimedata'];
+
+        return $this->set_services;
     }
 
     /**
