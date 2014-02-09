@@ -29,5 +29,11 @@
             "Molajo\\Service\\": "Service/",
             "Molajo\\Route\\": "Source/"
         }
-    }
+    },
+
+    "archive": {
+        "exclude": ["/.dev"]
+    },
+
+    "minimum-stability": "dev"
 }
