@@ -422,6 +422,10 @@ abstract class AbstractHandler implements RouteInterface
     {
         $path = $this->application_path;
 
+        if (substr($path, 0, 1) == '/') {
+            $path = substr($path, 1, strlen($path) - 1);
+        }
+
         $remove = $this->route->filters_array;
 
         if (is_array($remove) && count($remove) > 0) {

@@ -1,7 +1,7 @@
 {
     "name": "molajo/route",
     "description": "Molajo Route Services for PHP Applications",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "type": "molajo-package",
     "keywords": ["route", "commonapi", "molajo"],
     "homepage": "http://github.com/Molajo/Route",
@@ -26,7 +26,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Molajo\\Service\\": "Service/",
+            "Molajo\\Factories\\": "Factories/",
             "Molajo\\Route\\": "Source/"
         }
     },

@@ -1,27 +1,28 @@
 <?php
 /**
- * Route Service Provider
+ * Route Factory Method
  *
  * @package    Molajo
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @copyright  2014 Amy Stephen. All rights reserved.
  */
-namespace Molajo\Service\Route;
+namespace Molajo\Factories\Route;
 
 use Exception;
 use CommonApi\Exception\RuntimeException;
-use CommonApi\IoC\ServiceProviderInterface;
-use Molajo\IoC\AbstractServiceProvider;
+use CommonApi\IoC\FactoryMethodInterface;
+use CommonApi\IoC\FactoryMethodBatchSchedulingInterface;
+use Molajo\IoC\FactoryBase;
 
 /**
- * Route Service Provider
+ * Route Factory Method
  *
  * @author     Amy Stephen
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @copyright  2014 Amy Stephen. All rights reserved.
  * @since      1.0
  */
-class RouteServiceProvider extends AbstractServiceProvider implements ServiceProviderInterface
+class RouteFactoryMethod extends FactoryBase implements FactoryMethodInterface, FactoryMethodBatchSchedulingInterface
 {
     /**
      * Constructor
@@ -32,14 +33,14 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
      */
     public function __construct(array $options = array())
     {
-        $options['service_name']      = basename(__DIR__);
-        $options['service_namespace'] = null;
+        $options['product_name']      = basename(__DIR__);
+        $options['product_namespace'] = null;
 
         parent::__construct($options);
     }
 
     /**
-     * Define Dependencies for the Service
+     * Define dependencies or use dependencies automatically defined by base class using Reflection
      *
      * @return  array
      * @since   1.0
@@ -49,10 +50,10 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
     {
         $options = array();
 
-        $this->dependencies                = array();
-        $this->dependencies['Resource']    = $options;
-        $this->dependencies['Request']     = $options;
-        $this->dependencies['Runtimedata'] = $options;
+        $this->dependencies                  = array();
+        $this->dependencies['Resource']      = $options;
+        $this->dependencies['Request']       = $options;
+        $this->dependencies['Runtimedata']   = $options;
         $this->dependencies['Authorisation'] = $options;
 
         return $this->dependencies;
@@ -82,17 +83,17 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
      * @since   1.0
      * @throws  \CommonApi\Exception\RuntimeException;
      */
-    public function instantiateService()
+    public function instantiateClass()
     {
         $handler = $this->getAdapterHandler();
 
-        $this->service_instance = $this->getAdapter($handler);
+        $this->product_result = $this->getAdapter($handler);
 
         return $this;
     }
 
     /**
-     * Logic contained within this method is invoked after the Service Class construction
+     * Logic contained within this method is invoked after the class construction
      *  and can be used for setter logic or other post-construction processing
      *
      * @return  $this
@@ -100,37 +101,37 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
      */
     public function onAfterInstantiation()
     {
-        $results = $this->service_instance->verifySecureProtocol();
+        $results = $this->product_result->verifySecureProtocol();
         if (isset($results->error_code) && (int)$results->error_code > 0) {
-            $this->service_instance = $results;
+            $this->product_result = $results;
             return $this;
         }
 
-        $results = $this->service_instance->verifyHome();
+        $results = $this->product_result->verifyHome();
         if (isset($results->error_code) && (int)$results->error_code > 0) {
-            $this->service_instance = $results;
+            $this->product_result = $results;
             return $this;
         }
 
-        $results = $this->service_instance->setRequest();
+        $results = $this->product_result->setRequest();
         if (isset($results->error_code) && (int)$results->error_code > 0) {
-            $this->service_instance = $results;
+            $this->product_result = $results;
             return $this;
         }
 
-        $results = $this->service_instance->setRoute();
+        $results = $this->product_result->setRoute();
         if (isset($results->error_code) && (int)$results->error_code > 0) {
-            $this->service_instance = $results;
+            $this->product_result = $results;
             return $this;
         }
 
         $this->dependencies['Runtimedata']->page_type = $results->page_type;
-        $this->dependencies['Runtimedata']->route = $this->sortObject($results);
+        $this->dependencies['Runtimedata']->route     = $this->sortObject($results);
 
-        $this->service_instance = $results;
+        $this->product_result = $results;
 
         /** Step 3. Authorised to Access Site */
-        $options      = array(
+        $options    = array(
             'action_id'  => null,
             'catalog_id' => null,
             'type'       => 'Site'
@@ -142,7 +143,7 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
         }
 
         /** Step 3. Authorised to Access Application */
-        $options      = array(
+        $options    = array(
             'action_id'  => null,
             'catalog_id' => $this->dependencies['Runtimedata']->application->catalog_id,
             'type'       => 'Application'
@@ -154,7 +155,7 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
         }
 
         /** Step 4. Authorised for Catalog */
-        $options    = array(
+        $options = array(
             'action'     => $this->dependencies['Runtimedata']->route->action,
             'catalog_id' => $this->dependencies['Runtimedata']->route->catalog_id,
             'type'       => 'Catalog'
@@ -187,16 +188,16 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
     }
 
     /**
-     * Service Provider Controller requests any Services (other than the current service) to be saved
+     * Factory Method Controller requests any Products (other than the current product) to be saved
      *
      * @return  array
      * @since   1.0
      */
-    public function setServices()
+    public function setContainerEntries()
     {
-        $this->set_services['Runtimedata'] = $this->dependencies['Runtimedata'];
+        $this->set_container_entries['Runtimedata'] = $this->dependencies['Runtimedata'];
 
-        return $this->set_services;
+        return $this->set_container_entries;
     }
 
     /**
@@ -206,7 +207,7 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
      *
      * @return  object
      * @since   1.0
-     * @throws  ServiceProviderInterface
+     * @throws  FactoryMethodInterface
      */
     protected function getAdapterHandler()
     {
@@ -224,7 +225,7 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
             = $this->dependencies['Runtimedata']->reference_data->task_to_action;
 
         $query = $this->dependencies['Resource']->get(
-            'query:///Molajo//Datasource//Catalog.xml',
+            'query:///Molajo//Model//Datasource//Catalog.xml',
             array('runtime_data' => $this->dependencies['Runtimedata'])
         );
 
@@ -242,6 +243,7 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
                 $this->dependencies['Filters'],
                 $query
             );
+
         } catch (Exception $e) {
             throw new RuntimeException
             ('Route: Could not instantiate Handler: ' . $class);
@@ -255,7 +257,7 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
      *
      * @return  object
      * @since   1.0
-     * @throws  ServiceProviderInterface
+     * @throws  FactoryMethodInterface
      */
     protected function getAdapter($handler)
     {
@@ -279,7 +281,7 @@ class RouteServiceProvider extends AbstractServiceProvider implements ServicePro
      */
     public function getApplicationFilters()
     {
-        $f = $this->dependencies['Resource']->get('xml:///Molajo//Application//Filters.xml');
+        $f = $this->dependencies['Resource']->get('xml:///Molajo//Model//Application//Filters.xml');
 
         $filters = array();
         foreach ($f->filter as $t) {
