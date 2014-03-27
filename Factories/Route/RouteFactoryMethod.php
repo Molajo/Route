@@ -10,9 +10,9 @@ namespace Molajo\Factories\Route;
 
 use Exception;
 use CommonApi\Exception\RuntimeException;
-use CommonApi\IoC\FactoryMethodInterface;
-use CommonApi\IoC\FactoryMethodBatchSchedulingInterface;
-use Molajo\IoC\FactoryBase;
+use CommonApi\IoC\FactoryInterface;
+use CommonApi\IoC\FactoryBatchInterface;
+use Molajo\IoC\FactoryMethodBase;
 
 /**
  * Route Factory Method
@@ -22,7 +22,7 @@ use Molajo\IoC\FactoryBase;
  * @copyright  2014 Amy Stephen. All rights reserved.
  * @since      1.0
  */
-class RouteFactoryMethod extends FactoryBase implements FactoryMethodInterface, FactoryMethodBatchSchedulingInterface
+class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, FactoryBatchInterface
 {
     /**
      * Constructor
@@ -85,10 +85,17 @@ class RouteFactoryMethod extends FactoryBase implements FactoryMethodInterface, 
      */
     public function instantiateClass()
     {
-        $handler = $this->getAdapterHandler();
+        $adapter = $this->getAdapter();
 
-        $this->product_result = $this->getAdapter($handler);
+        $class = 'Molajo\\Route\\Driver';
 
+        try {
+            $this->product_result = new $class($adapter);
+        } catch (Exception $e) {
+
+            throw new RuntimeException
+            ('Route: Could not instantiate Adapter');
+        }
         return $this;
     }
 
@@ -207,9 +214,9 @@ class RouteFactoryMethod extends FactoryBase implements FactoryMethodInterface, 
      *
      * @return  object
      * @since   1.0
-     * @throws  FactoryMethodInterface
+     * @throws  FactoryInterface
      */
-    protected function getAdapterHandler()
+    protected function getAdapter()
     {
         $url_force_ssl
             = $this->dependencies['Runtimedata']->application->parameters->url_force_ssl;
@@ -229,7 +236,7 @@ class RouteFactoryMethod extends FactoryBase implements FactoryMethodInterface, 
             array('runtime_data' => $this->dependencies['Runtimedata'])
         );
 
-        $class = 'Molajo\\Route\\Handler\\Database';
+        $class = 'Molajo\\Route\\Adapter\\Database';
 
         try {
             return new $class(
@@ -247,28 +254,6 @@ class RouteFactoryMethod extends FactoryBase implements FactoryMethodInterface, 
         } catch (Exception $e) {
             throw new RuntimeException
             ('Route: Could not instantiate Handler: ' . $class);
-        }
-    }
-
-    /**
-     * Get Filesystem Adapter, inject with specific Filesystem Adapter Handler
-     *
-     * @param   object $handler
-     *
-     * @return  object
-     * @since   1.0
-     * @throws  FactoryMethodInterface
-     */
-    protected function getAdapter($handler)
-    {
-        $class = 'Molajo\\Route\\Adapter';
-
-        try {
-            return new $class($handler);
-        } catch (Exception $e) {
-
-            throw new RuntimeException
-            ('Route: Could not instantiate Adapter');
         }
     }
 

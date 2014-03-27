@@ -1,26 +1,26 @@
 <?php
 /**
- * Abstract Route Handler
+ * Abstract Route Adapter
  *
  * @package    Molajo
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @copyright  2014 Amy Stephen. All rights reserved.
  */
-namespace Molajo\Route\Handler;
+namespace Molajo\Route\Adapter;
 
 use CommonApi\Exception\RuntimeException;
 use CommonApi\Route\RouteInterface;
 use stdClass;
 
 /**
- * Abstract Route Handler
+ * Abstract Route Adapter
  *
  * @author     Amy Stephen
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @copyright  2014 Amy Stephen. All rights reserved.
  * @since      1.0
  */
-abstract class AbstractHandler implements RouteInterface
+abstract class AbstractAdapter implements RouteInterface
 {
     /**
      * Request Object

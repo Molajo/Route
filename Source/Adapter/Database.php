@@ -6,7 +6,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @copyright  2014 Amy Stephen. All rights reserved.
  */
-namespace Molajo\Route\Handler;
+namespace Molajo\Route\Adapter;
 
 use Exception;
 use CommonApi\Exception\RuntimeException;
@@ -21,7 +21,7 @@ use Molajo\Controller\ReadController;
  * @copyright  2014 Amy Stephen. All rights reserved.
  * @since      1.0
  */
-class Database extends AbstractHandler implements RouteInterface
+class Database extends AbstractAdapter implements RouteInterface
 {
     /**
      * Resource Query
@@ -82,6 +82,9 @@ class Database extends AbstractHandler implements RouteInterface
      */
     public function setRoute()
     {
+
+        // todo: split out the permissions
+
         /* test 1: Application 2, Site 1
 
             Retrieve Catalog ID: 831 using Source ID: 1 and Catalog Type ID: 1000
@@ -115,41 +118,28 @@ class Database extends AbstractHandler implements RouteInterface
         $this->resource_query->setModelRegistry('process_events', 0);
         $this->resource_query->setModelRegistry('query_object', 'item');
 
-        $prefix = $this->resource_query->getModelRegistry('primary_prefix', 'a');
-        $key    = $this->resource_query->getModelRegistry('primary_key', 'id');
-
-        $this->resource_query->model->query->where(
-            $this->resource_query->model->database->qn($prefix)
-            . ' . '
-            . $this->resource_query->model->database->qn('sef_request')
-            . ' = '
-            . $this->resource_query->model->database->q($this->route->path)
+        $this->resource_query->where(
+            'column',
+            $this->resource_query->getModelRegistry('primary_prefix', 'a') . '.' . 'sef_request',
+            '=',
+            'string',
+            $this->route->path
         );
 
-        /** Extension Join */
-
-        /** Standard Query Values */
-        $this->resource_query->model->query->where(
-            $this->resource_query->model->database->qn($prefix)
-            . ' . '
-            . $this->resource_query->model->database->qn('application_id')
-            . ' = '
-            . $this->resource_query->model->database->q($this->application_id)
+        $this->resource_query->where(
+            'column',
+            $this->resource_query->getModelRegistry('primary_prefix', 'a') . '.' . 'page_type',
+            '<>',
+            'string',
+            'link'
         );
 
-        $this->resource_query->model->query->where(
-            $this->resource_query->model->database->qn($prefix)
-            . ' . '
-            . $this->resource_query->model->database->qn('page_type')
-            . ' <> '
-            . $this->resource_query->model->database->q('link')
-        );
-
-        $this->resource_query->model->query->where(
-            $this->resource_query->model->database->qn($prefix)
-            . ' . '
-            . $this->resource_query->model->database->qn('enabled')
-            . ' = 1 '
+        $this->resource_query->where(
+            'column',
+            $this->resource_query->getModelRegistry('primary_prefix', 'a') . '.' . 'enabled',
+            '=',
+            'integer',
+            1
         );
 
         /** Run the Query */

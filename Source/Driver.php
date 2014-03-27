@@ -11,17 +11,17 @@ namespace Molajo\Route;
 use CommonApi\Route\RouteInterface;
 
 /**
- * Adapter for Route
+ * Route Driver
  *
  * @package    Molajo
  * @copyright  2014 Amy Stephen. All rights reserved.
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @since      1.0
  */
-class Adapter implements RouteInterface
+class Driver implements RouteInterface
 {
     /**
-     * Route Handler
+     * Route Driver
      *
      * @var     object  CommonApi\Route\RouteInterface
      * @since   1.0
