@@ -142,6 +142,15 @@ class Database extends AbstractAdapter implements RouteInterface
             1
         );
 
+        $this->resource_query->where(
+            'column',
+            $this->resource_query->getModelRegistry('primary_prefix', 'a') . '.' . 'application_id',
+            '=',
+            'integer',
+            2
+//todo: fix application issue
+        );
+
         /** Run the Query */
         try {
             $item = $this->resource_query->getData();
