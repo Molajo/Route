@@ -20,7 +20,7 @@ use Molajo\IoC\FactoryMethodBase;
  * @author     Amy Stephen
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @copyright  2014 Amy Stephen. All rights reserved.
- * @since      1.0
+ * @since      1.0.0
  */
 class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, FactoryBatchInterface
 {
@@ -54,7 +54,6 @@ class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, 
         $this->dependencies['Resource']      = $options;
         $this->dependencies['Request']       = $options;
         $this->dependencies['Runtimedata']   = $options;
-        $this->dependencies['Authorisation'] = $options;
 
         return $this->dependencies;
     }
@@ -137,60 +136,6 @@ class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, 
 
         $this->product_result = $results;
 
-        /** Step 3. Authorised to Access Site */
-        $options    = array(
-            'action_id'  => null,
-            'catalog_id' => null,
-            'type'       => 'Site'
-        );
-        $authorised = $this->dependencies['Authorisation']->isUserAuthorised($options);
-        if ($authorised === false) {
-//todo: finish authorisation
-            // 301 redirect
-        }
-
-        /** Step 3. Authorised to Access Application */
-        $options    = array(
-            'action_id'  => null,
-            'catalog_id' => $this->dependencies['Runtimedata']->application->catalog_id,
-            'type'       => 'Application'
-        );
-        $authorised = $this->dependencies['Authorisation']->isUserAuthorised($options);
-        if ($authorised === false) {
-            //todo: finish authorisation
-            // 301 redirect
-        }
-
-        /** Step 4. Authorised for Catalog */
-        $options = array(
-            'action'     => $this->dependencies['Runtimedata']->route->action,
-            'catalog_id' => $this->dependencies['Runtimedata']->route->catalog_id,
-            'type'       => 'Catalog'
-        );
-
-        $authorised = $this->dependencies['Authorisation']->isUserAuthorised($options);
-        if ($authorised === false) {
-            // 301 redirect
-        }
-
-        /** Step 5. Validate if site is set to offline mode that user has access */
-        $options    = array(
-            'type' => 'OfflineMode'
-        );
-        $authorised = $this->dependencies['Authorisation']->isUserAuthorised($options);
-        if ($authorised === false) {
-            // 301 redirect
-        }
-
-        /** Step 3. Thresholds: Lockout */
-        // IP address
-        // Hits
-        // Time of day
-        // Visits
-        // Login Attempts
-        // Upload Limits
-        // CSFR
-        // Captcha Failure
         return $this;
     }
 
