@@ -82,7 +82,6 @@ class Database extends AbstractAdapter implements RouteInterface
      */
     public function setRoute()
     {
-
         // todo: split out the permissions
 
         /* test 1: Application 2, Site 1
