@@ -22,7 +22,7 @@
     "require": {
         "php": ">=5.4",
         "commonapi/route": "dev-master",
-        "molajo/database": "dev-master"
+        "molajo/query": "dev-master"
     },
     "autoload": {
         "psr-4": {
