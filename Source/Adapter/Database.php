@@ -155,7 +155,7 @@ class Database extends AbstractAdapter implements RouteInterface
             $item = $this->resource_query->getData();
 
         } catch (Exception $e) {
-            throw new RuntimeException ($e->getMessage());
+            throw new RuntimeException($e->getMessage());
         }
 
         $this->route->model_registry = $this->resource_query->getModelRegistry('*');
