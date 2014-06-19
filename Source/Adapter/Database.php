@@ -40,7 +40,6 @@ class Database extends AbstractAdapter implements RouteInterface
      * @param   string         $application_path
      * @param   int            $application_id
      * @param   string         $base_url
-     * @param   array          $task_to_action
      * @param   array          $filters
      * @param   ReadController $resource_query
      *
@@ -53,7 +52,6 @@ class Database extends AbstractAdapter implements RouteInterface
         $application_path,
         $application_id,
         $base_url,
-        array $task_to_action = array(),
         array $filters = array(),
         ReadController $resource_query
     ) {
@@ -64,7 +62,6 @@ class Database extends AbstractAdapter implements RouteInterface
             $application_path,
             $application_id,
             $base_url,
-            $task_to_action,
             $filters
         );
 

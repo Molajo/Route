@@ -50,10 +50,10 @@ class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, 
     {
         $options = array();
 
-        $this->dependencies                  = array();
-        $this->dependencies['Resource']      = $options;
-        $this->dependencies['Request']       = $options;
-        $this->dependencies['Runtimedata']   = $options;
+        $this->dependencies                = array();
+        $this->dependencies['Resource']    = $options;
+        $this->dependencies['Request']     = $options;
+        $this->dependencies['Runtimedata'] = $options;
 
         return $this->dependencies;
     }
@@ -92,8 +92,9 @@ class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, 
             $this->product_result = new $class($adapter);
         } catch (Exception $e) {
 
-            throw new RuntimeException
-            ('Route: Could not instantiate Adapter');
+            throw new RuntimeException(
+                'Route: Could not instantiate Adapter'
+            );
         }
         return $this;
     }
@@ -173,8 +174,6 @@ class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, 
             = $this->dependencies['Runtimedata']->application->id;
         $base_url
             = $this->dependencies['Runtimedata']->application->base_url;
-        $task_to_action
-            = $this->dependencies['Runtimedata']->reference_data->task_to_action;
 
         $query = $this->dependencies['Resource']->get(
             'query:///Molajo//Model//Datasource//Catalog.xml',
@@ -191,14 +190,15 @@ class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, 
                 $application_path,
                 $application_id,
                 $base_url,
-                $task_to_action,
                 $this->dependencies['Filters'],
                 $query
             );
 
         } catch (Exception $e) {
             throw new RuntimeException
-            ('Route: Could not instantiate Handler: ' . $class);
+            (
+                'Route: Could not instantiate Handler: ' . $class
+            );
         }
     }
 

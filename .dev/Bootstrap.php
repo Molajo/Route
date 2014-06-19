@@ -13,9 +13,9 @@ if (function_exists('CreateClassMap')) {
 }
 include_once $base . '/vendor/autoload.php';
 
-$classmap = array();
-$results  = createClassMap($base . '/Source/Adapter', 'Molajo\\Route\\Adapter\\');
-$classmap = array_merge($classmap, $results);
+$classmap                          = array();
+$results                           = createClassMap($base . '/Source/Adapter', 'Molajo\\Route\\Adapter\\');
+$classmap                          = array_merge($classmap, $results);
 $classmap['Molajo\\Route\\Driver'] = $base . '/Source/Driver.php';
 
 spl_autoload_register(
