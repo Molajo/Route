@@ -247,7 +247,8 @@ abstract class AbstractAdapter implements RouteInterface
         $this->setAction();
         $this->setBaseUrl();
         $this->setRequestVariables();
-        $this->setPath();
+
+        $this->route->path = $this->setPath($this->filters);
 
         return $this->route;
     }
@@ -528,55 +529,53 @@ abstract class AbstractAdapter implements RouteInterface
     /**
      * Set Path
      *
-     * @return  $this
+     * @param   array $remove
+     *
+     * @return  string
      * @throws  \CommonApi\Exception\RuntimeException
      * @since   1.0
      */
-    protected function setPath()
+    protected function setPath(array $remove = array())
     {
-        $path = $this->application_path;
+        $path = $this->removePathSlash($this->application_path);
 
+        return $this->removeUrlNodes($path, array $remove);
+    }
+
+    /**
+     * Remove Path Slash
+     *
+     * @param   string $path
+     *
+     * @return  $path
+     * @since   1.0
+     */
+    protected function removePathSlash($path)
+    {
         if (substr($path, 0, 1) === '/') {
             $path = substr($path, 1, strlen($path) - 1);
         }
 
-        $remove = $this->route->filters_array;
+        return $path;
+    }
 
-        if (is_array($remove) && count($remove) > 0) {
-            foreach ($remove as $item) {
-                $found = strrpos($path, '/' . $item);
-                $path  = substr($path, 0, $found);
-            }
+    /**
+     * Decrement Index
+     *
+     * @param   string $path
+     * @param   array  $remove
+     *
+     * @return  integer
+     * @since   1.0
+     */
+    protected function removeUrlNodes($path, array $remove = array())
+    {
+        foreach ($remove as $item) {
+            $found = strrpos($path, '/' . $item);
+            $path  = substr($path, 0, $found);
         }
 
-        $this->route->path = $path;
-
-        return $this;
-    }
-    /**
-     * Decrement Index
-     *
-     * @param   integer $i
-     *
-     * @return  integer
-     * @since   1.0
-     */
-    protected function decrementIndex($i)
-    {
-        return $i - 1;
-    }
-
-    /**
-     * Decrement Index
-     *
-     * @param   integer $i
-     *
-     * @return  integer
-     * @since   1.0
-     */
-    protected function decrementIndex($i)
-    {
-        return $i - 1;
+        return $path;
     }
 
     /**
@@ -617,7 +616,6 @@ abstract class AbstractAdapter implements RouteInterface
         $route_parameters = array();
 
         $i = $this->setIndexAtMax($parameters);
-
 
 
         $path          = '';
