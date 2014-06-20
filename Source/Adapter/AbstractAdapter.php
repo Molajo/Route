@@ -539,7 +539,7 @@ abstract class AbstractAdapter implements RouteInterface
     {
         $path = $this->removePathSlash($this->application_path);
 
-        return $this->removeUrlNodes($path, array $remove);
+        return $this->removeUrlNodes($path, $remove);
     }
 
     /**
