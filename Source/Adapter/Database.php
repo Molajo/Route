@@ -21,7 +21,7 @@ use Molajo\Controller\ReadController;
  * @copyright  2014 Amy Stephen. All rights reserved.
  * @since      1.0.0
  */
-class Database extends AbstractAdapter implements RouteInterface
+class Database extends AbstractParameters implements RouteInterface
 {
     /**
      * Resource Query
