@@ -158,14 +158,14 @@ class Database extends AbstractAdapter implements RouteInterface
         $this->route->model_registry = $this->resource_query->getModelRegistry('*');
 
         /** 404 */
-        if (count($item) == 0 || $item === false) {
+        if (count($item) === 0 || $item === false) {
             $this->route->route_found = 0;
 
             return $this->route;
         }
 
         /** Redirect */
-        if ((int)$item->redirect_to_id == 0) {
+        if ((int)$item->redirect_to_id === 0) {
         } else {
             $this->route->redirect_to_id = (int)$item->redirect_to_id;
 
@@ -180,7 +180,7 @@ class Database extends AbstractAdapter implements RouteInterface
 
             $this->route->$key = $value;
 
-            if ($key == 'b_model_name') {
+            if ($key === 'b_model_name') {
                 $this->route->model_name          = ucfirst(strtolower($item->b_model_name));
                 $this->route->model_type          = ucfirst(strtolower($item->b_model_type));
                 $this->route->model_registry_name = $this->route->model_name . $this->route->model_type;

@@ -41,7 +41,7 @@ abstract class AbstractAdapter implements RouteInterface
     /**
      * Force SSL Indicator
      *
-     * @var    int
+     * @var    integer
      * @since  1.0
      */
     protected $url_force_ssl;
@@ -49,7 +49,7 @@ abstract class AbstractAdapter implements RouteInterface
     /**
      * Application Home Catalog ID
      *
-     * @var    int
+     * @var    integer
      * @since  1.0
      */
     protected $application_home_catalog_id;
@@ -57,7 +57,7 @@ abstract class AbstractAdapter implements RouteInterface
     /**
      * Application Path
      *
-     * @var    int
+     * @var    string
      * @since  1.0
      */
     protected $application_path;
@@ -65,7 +65,7 @@ abstract class AbstractAdapter implements RouteInterface
     /**
      * Application ID
      *
-     * @var    int
+     * @var    integer
      * @since  1.0
      */
     protected $application_id;
@@ -73,7 +73,7 @@ abstract class AbstractAdapter implements RouteInterface
     /**
      * Base URL
      *
-     * @var    int
+     * @var    string
      * @since  1.0
      */
     protected $base_url;
@@ -103,16 +103,30 @@ abstract class AbstractAdapter implements RouteInterface
     protected $route;
 
     /**
+     * Page Types
+     *
+     * @var    array
+     * @since  1.0
+     */
+    protected $page_types
+        = array(
+            'new'    => 'new',
+            'edit'   => 'edit',
+            'delete' => 'delete'
+        );
+
+    /**
      * Constructor
      *
-     * @param   object $request
-     * @param   int    $url_force_ssl
-     * @param   int    $application_home_catalog_id
-     * @param   string $application_path
-     * @param   int    $application_id
-     * @param   string $base_url
-     * @param   array  $task_to_action
-     * @param   array  $filters
+     * @param   object  $request
+     * @param   integer $url_force_ssl
+     * @param   integer $application_home_catalog_id
+     * @param   string  $application_path
+     * @param   integer $application_id
+     * @param   string  $base_url
+     * @param   array   $task_to_action
+     * @param   array   $filters
+     * @param   array   $page_types
      *
      * @since   1.0
      */
@@ -124,7 +138,8 @@ abstract class AbstractAdapter implements RouteInterface
         $application_id,
         $base_url,
         array $task_to_action = array(),
-        array $filters = array()
+        array $filters = array(),
+        array $page_types = array()
     ) {
         $this->request                     = $request;
         $this->url_force_ssl               = $url_force_ssl;
@@ -135,6 +150,22 @@ abstract class AbstractAdapter implements RouteInterface
         $this->task_to_action              = $task_to_action;
         $this->filters                     = $filters;
 
+        if ($page_types === array()) {
+        } else {
+            $this->page_types = $page_types;
+        }
+
+        $this->initialiseRoute();
+    }
+
+    /**
+     * Initialise Route Object
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    protected function initialiseRoute()
+    {
         $this->route                      = new stdClass();
         $this->route->route_found         = null;
         $this->route->error_code          = 0;
@@ -153,6 +184,8 @@ abstract class AbstractAdapter implements RouteInterface
         $this->route->model_type          = '';
         $this->route->model_registry_name = '';
         $this->route->page_type           = '';
+
+        return $this;
     }
 
     /**
@@ -164,11 +197,11 @@ abstract class AbstractAdapter implements RouteInterface
      */
     public function verifySecureProtocol()
     {
-        if ((int)$this->url_force_ssl == 0) {
+        if ((int)$this->url_force_ssl === 0) {
             return $this->route;
         }
 
-        if ((int)$this->request->is_secure == 1) {
+        if ((int)$this->request->is_secure === 1) {
             return $this->route;
         }
 
@@ -187,30 +220,15 @@ abstract class AbstractAdapter implements RouteInterface
      */
     public function verifyHome()
     {
-        if (strlen($this->application_path) == 0
-            || trim($this->application_path) == ''
-        ) {
-            $this->route->catalog_id = $this->application_home_catalog_id;
-            $this->route->home       = 1;
-
+        if ($this->verifyHomeEmptyPath() === true) {
             return $this->route;
         }
 
-        if ($this->application_path == '/') {
-            $this->route->error_code     = 301;
-            $this->route->redirect_to_id = $this->application_home_catalog_id;
-
+        if ($this->verifyHomeSlash() === true) {
             return $this->route;
         }
 
-        if ($this->application_path == 'index.php'
-            || $this->application_path == 'index.php/'
-            || $this->application_path == 'index.php?'
-            || $this->application_path == '/index.php/'
-        ) {
-            $this->route->error_code     = 301;
-            $this->route->redirect_to_id = $this->application_home_catalog_id;
-
+        if ($this->verifyHomeIndex() === true) {
             return $this->route;
         }
 
@@ -235,6 +253,81 @@ abstract class AbstractAdapter implements RouteInterface
     }
 
     /**
+     * Set Route
+     *
+     * @return  object
+     * @throws  \CommonApi\Exception\RuntimeException
+     * @since   1.0
+     */
+    public function setRoute()
+    {
+        return $this->route;
+    }
+
+    /**
+     * Home: application path
+     *
+     * @return  boolean
+     * @throws  \CommonApi\Exception\RuntimeException
+     * @since   1.0
+     */
+    protected function verifyHomeEmptyPath()
+    {
+        if (strlen($this->application_path) === 0
+            || trim($this->application_path) === ''
+        ) {
+            $this->route->catalog_id = $this->application_home_catalog_id;
+            $this->route->home       = 1;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Home: slash (redirect)
+     *
+     * @return  boolean
+     * @throws  \CommonApi\Exception\RuntimeException
+     * @since   1.0
+     */
+    protected function verifyHomeSlash()
+    {
+        if ($this->application_path === '/') {
+            $this->route->error_code     = 301;
+            $this->route->redirect_to_id = $this->application_home_catalog_id;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Home: index.php (redirect)
+     *
+     * @return  object
+     * @throws  \CommonApi\Exception\RuntimeException
+     * @since   1.0
+     */
+    public function verifyHomeIndex()
+    {
+        if ($this->application_path === 'index.php'
+            || $this->application_path === 'index.php/'
+            || $this->application_path === 'index.php?'
+            || $this->application_path === '/index.php/'
+        ) {
+            $this->route->error_code     = 301;
+            $this->route->redirect_to_id = $this->application_home_catalog_id;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Set Action from HTTP Method
      *
      * @return  $this
@@ -246,11 +339,11 @@ abstract class AbstractAdapter implements RouteInterface
         $method = $this->request->method;
         $method = strtoupper($method);
 
-        if ($method == 'POST') {
+        if ($method === 'POST') {
             $action = 'create';
-        } elseif ($method == 'PUT') {
+        } elseif ($method === 'PUT') {
             $action = 'update';
-        } elseif ($method == 'DELETE') {
+        } elseif ($method === 'DELETE') {
             $action = 'delete';
         } else {
             $method = 'GET';
@@ -264,7 +357,7 @@ abstract class AbstractAdapter implements RouteInterface
     }
 
     /**
-     * Set Path
+     * Set Base Url
      *
      * @return  $this
      * @throws  \CommonApi\Exception\RuntimeException
@@ -286,127 +379,148 @@ abstract class AbstractAdapter implements RouteInterface
      */
     protected function setRequestVariables()
     {
-        $post_variables = array();
-
-        if ($this->route->action == 'read') {
-            $this->setReadVariables();
+        if ($this->route->action === 'read') {
+            $this->setParameters('filters', $this->filters);
         } else {
-            $this->setTaskVariables();
+            $this->setParameters('task', $this->runtime_data->permission_tasks);
         }
 
         return $this;
     }
 
     /**
-     * Retrieve non-route values for SEF URLs:
+     * Retrieve Parameters from URL
+     *
+     * @param   string $route_object_item
+     * @param   array  $search_for
      *
      * @return  $this
      * @since   1.0
      */
-    protected function setReadVariables()
+    protected function setParameters($route_object_item, array $search_for = array())
     {
-        $urlParts = explode('/', $this->application_path);
-
-        if (count($this->request->query) > 0 && is_array($this->request->query)) {
-            foreach ($this->request->query as $parameter) {
-                $urlParts[] = $parameter;
-            }
-        }
-
-        if (count($urlParts) == 0) {
+        $parameters = $this->getParameters();
+        if (count($parameters) === 0) {
             return $this;
         }
 
-        $path        = '';
-        $filterArray = '';
-        $filter      = '';
-        $i           = 0;
+        $this->route->$route_object_item = $this->getParameterPairs($parameters, $search_for);
 
+        $this->setPageType();
+
+        return $this;
+    }
+
+    /**
+     * Extract Parameter Pairs from URL
+     *
+     * @return  array
+     * @since   1.0
+     */
+    protected function getParameters()
+    {
+        $parameters = explode('/', $this->application_path);
+
+        if (count($this->request->query) > 0) {
+            foreach ($this->request->query as $parameter) {
+                $parameters[] = $parameter;
+            }
+        }
+
+        return $parameters;
+    }
+
+    /**
+     * Traverse backwards through parameter pairs to find filters
+     *
+     * @param  array $parameters
+     *
+     * @return array
+     * @since  1.0
+     */
+    protected function getParameterPairs(array $parameters = array(), $search_for = array())
+    {
         $route_parameters = array();
 
-        if (count($urlParts) > 0 && is_array($urlParts)) {
+        $i = $this->setIndexAtMax($parameters);
 
-            $i    = count($urlParts) - 1;
-            $done = false;
+        while ($i > 0) {
+            $parsed = $this->parseParameterPair($parameters[$i], $search_for);
 
-            while ($done === false) {
-
-                $test = $urlParts[$i];
-
-                $parsed = explode('=', $test);
-
-                if (in_array($parsed[0], $this->filters)) {
-                    $route_parameters[] = $test;
-                } else {
-                    $done = true;
-                }
-
-                $i = $i - 1;
-                if ($i < 0) {
-                    $done = true;
-                }
+            if ($parsed === array()) {
+                $i = -1;
+            } else {
+                $route_parameters[] = $parsed;
             }
+
+            $i = $this->decrementIndex($i);
         }
 
-        $this->route->filters_array = $route_parameters;
-
-        if (in_array('new', $route_parameters)) {
-            $this->page_type = 'new';
-
-        } elseif (in_array('edit', $route_parameters)) {
-            $this->page_type = 'edit';
-
-        } elseif (in_array('delete', $route_parameters)) {
-            $this->page_type = 'delete';
-        }
-
-        return $this;
+        return $route_parameters;
     }
 
     /**
-     * For non-read actions, retrieve task and values
+     * Set Index at Max
+     *
+     * @param   array $parameters
+     *
+     * @return  integer
+     * @since   1.0
+     */
+    protected function setIndexAtMax(array $parameters = array())
+    {
+        return count($parameters) - 1;
+    }
+
+    /**
+     * Decrement Index
+     *
+     * @param   integer $i
+     *
+     * @return  integer
+     * @since   1.0
+     */
+    protected function decrementIndex($i)
+    {
+        return $i - 1;
+    }
+
+    /**
+     * Parse Parameter Pair for specific values
+     *
+     * @param   array $pair
+     *
+     * @return  array
+     * @since   1.0
+     */
+    protected function parseParameterPair(array $pair = array(), array $search_for = array())
+    {
+        $parsed = explode('=', $pair);
+
+        if (in_array($parsed[0], $search_for)) {
+            return $pair;
+        }
+
+        return array();
+    }
+
+    /**
+     * Set Page Type
      *
      * @return  $this
      * @since   1.0
      */
-    protected function setTaskVariables()
+    protected function setPageType()
     {
-        if (count($this->request->parameters) > 0) {
-            foreach ($this->request->parameters as $parameter) {
-                $urlParts[] = $parameter;
-            }
+        if (in_array($this->page_type['new'], $this->route->filters_array)) {
+            $this->page_type = $this->page_type['new'];
+
+        } elseif (in_array($this->page_type['edit'], $this->route->filters_array)) {
+            $this->page_type = $this->page_type['edit'];
+
+        } elseif (in_array($this->page_type['delete'], $this->route->filters_array)) {
+            $this->page_type = $this->page_type['delete'];
         }
-
-        if (count($urlParts) == 0) {
-            return $this;
-        }
-
-        $tasks = $this->runtime_data->permission_tasks;
-
-        $path          = '';
-        $task          = '';
-        $action_target = '';
-
-        foreach ($urlParts as $slug) {
-            if ($task == '') {
-                if (in_array($slug, $tasks)) {
-                    $task = $slug;
-                } else {
-                    if (trim($path) == '') {
-                    } else {
-                        $path .= ' / ';
-                    }
-                    $path .= $slug;
-                }
-            } else {
-                $action_target = $slug;
-                break;
-            }
-        }
-
-        /** Map Action Verb (Tag, Favorite, etc.) to Permission Action (Update, Delete, etc.) */
-        $this->route->request_task        = $task;
-        $this->route->request_task_values = $action_target;
 
         return $this;
     }
@@ -422,7 +536,7 @@ abstract class AbstractAdapter implements RouteInterface
     {
         $path = $this->application_path;
 
-        if (substr($path, 0, 1) == '/') {
+        if (substr($path, 0, 1) === '/') {
             $path = substr($path, 1, strlen($path) - 1);
         }
 
@@ -439,17 +553,30 @@ abstract class AbstractAdapter implements RouteInterface
 
         return $this;
     }
-
     /**
-     * Set Route
+     * Decrement Index
      *
-     * @return  object
-     * @throws  \CommonApi\Exception\RuntimeException
+     * @param   integer $i
+     *
+     * @return  integer
      * @since   1.0
      */
-    public function setRoute()
+    protected function decrementIndex($i)
     {
-        return $this->route();
+        return $i - 1;
+    }
+
+    /**
+     * Decrement Index
+     *
+     * @param   integer $i
+     *
+     * @return  integer
+     * @since   1.0
+     */
+    protected function decrementIndex($i)
+    {
+        return $i - 1;
     }
 
     /**
@@ -463,7 +590,7 @@ abstract class AbstractAdapter implements RouteInterface
         /**
          * @todo test with non-sef URLs
          * $sef = $this->runtime_data->configuration_sef_url', 1);
-         *       if ($sef == 1) {
+         *       if ($sef === 1) {
          *
          * $this->getResourceSEF();
          *
@@ -475,5 +602,49 @@ abstract class AbstractAdapter implements RouteInterface
          */
 
         return;
+    }
+
+    // // // //
+
+    /**
+     * For non-read actions, retrieve task and values
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    protected function setTaskParameters(array $parameters = array(), $search_for = array())
+    {
+        $route_parameters = array();
+
+        $i = $this->setIndexAtMax($parameters);
+
+
+
+        $path          = '';
+        $task          = '';
+        $action_target = '';
+
+        foreach ($parameters as $slug) {
+            if ($task === '') {
+                if (in_array($slug, $search_for)) {
+                    $task = $slug;
+                } else {
+                    if (trim($path) === '') {
+                    } else {
+                        $path .= ' / ';
+                    }
+                    $path .= $slug;
+                }
+            } else {
+                $action_target = $slug;
+                break;
+            }
+        }
+
+        /** Map Action Verb (Tag, Favorite, etc.) to Permission Action (Update, Delete, etc.) */
+        $this->route->request_task        = $task;
+        $this->route->request_task_values = $action_target;
+
+        return $this;
     }
 }

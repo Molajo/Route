@@ -90,6 +90,7 @@ class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, 
 
         try {
             $this->product_result = new $class($adapter);
+
         } catch (Exception $e) {
 
             throw new RuntimeException(

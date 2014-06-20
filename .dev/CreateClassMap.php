@@ -30,7 +30,7 @@ function createClassMap($base, $qcn_prefix, array $exclude_array = array())
             }
         }
 
-        if ($file_object->getExtension() == 'php') {
+        if ($file_object->getExtension() === 'php') {
         } else {
             $include = false;
         }
