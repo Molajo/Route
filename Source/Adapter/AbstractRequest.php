@@ -1,6 +1,6 @@
 <?php
 /**
- * Abstract Route Adapter
+ * Request
  *
  * @package    Molajo
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
@@ -8,20 +8,120 @@
  */
 namespace Molajo\Route\Adapter;
 
-use CommonApi\Exception\RuntimeException;
 use CommonApi\Route\RouteInterface;
-use stdClass;
 
 /**
- * Abstract Route Adapter
+ * Request
  *
  * @author     Amy Stephen
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @copyright  2014 Amy Stephen. All rights reserved.
  * @since      1.0.0
  */
-abstract class AbstractParameters extends AbstractAdapter implements RouteInterface
+abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterface
 {
+    /**
+     * Set Request
+     *
+     * @return  object
+     * @throws  \CommonApi\Exception\RuntimeException
+     * @since   1.0
+     */
+    public function setRequest()
+    {
+        $this->setAction();
+        $this->setBaseUrl();
+        $this->setRequestVariables();
+
+        $this->route->path = $this->setPath($this->filters);
+
+        return $this->route;
+    }
+
+    /**
+     * Set Action from HTTP Method
+     *
+     * @return  $this
+     * @throws  \CommonApi\Exception\RuntimeException
+     * @since   1.0
+     */
+    protected function setAction()
+    {
+        $method = $this->request->method;
+        $method = strtoupper($method);
+
+        if ($method === 'POST') {
+            $action = 'create';
+        } elseif ($method === 'PUT') {
+            $action = 'update';
+        } elseif ($method === 'DELETE') {
+            $action = 'delete';
+        } else {
+            $method = 'GET';
+            $action = 'read';
+        }
+
+        $this->route->action = $action;
+        $this->route->method = $method;
+
+        return $this;
+    }
+
+    /**
+     * Set Base Url
+     *
+     * @return  $this
+     * @throws  \CommonApi\Exception\RuntimeException
+     * @since   1.0
+     */
+    protected function setBaseUrl()
+    {
+        $this->route->base_url = $this->base_url;
+
+        return $this->route;
+    }
+
+    /**
+     * Set Request Variables
+     *
+     * @return  $this
+     * @throws  \CommonApi\Exception\RuntimeException
+     * @since   1.0
+     */
+    protected function setRequestVariables()
+    {
+        if ($this->route->action === 'read') {
+            $this->setParameters('filters', $this->filters);
+        } else {
+            $this->setParameters('task', $this->runtime_data->permission_tasks);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Retrieve Parameters from URL
+     *
+     * @param   string $route_object_item
+     * @param   array  $search_for
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    protected function setParameters($route_object_item, array $search_for = array())
+    {
+        $parameters = $this->getParameters();
+        if (count($parameters) === 0) {
+            return $this;
+        }
+
+        $this->route->$route_object_item = $this->getParameterPairs($parameters, $search_for);
+
+        $this->setPageType();
+
+        return $this;
+    }
+
     /**
      * Extract Parameter Pairs from URL
      *
@@ -136,6 +236,49 @@ abstract class AbstractParameters extends AbstractAdapter implements RouteInterf
         return $this;
     }
 
+    // // // //
+
+    /**
+     * For non-read actions, retrieve task and values
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    protected function setTaskParameters(array $parameters = array(), $search_for = array())
+    {
+        $route_parameters = array();
+
+        $i = $this->setIndexAtMax($parameters);
+
+
+        $path          = '';
+        $task          = '';
+        $action_target = '';
+
+        foreach ($parameters as $slug) {
+            if ($task === '') {
+                if (in_array($slug, $search_for)) {
+                    $task = $slug;
+                } else {
+                    if (trim($path) === '') {
+                    } else {
+                        $path .= ' / ';
+                    }
+                    $path .= $slug;
+                }
+            } else {
+                $action_target = $slug;
+                break;
+            }
+        }
+
+        /** Map Action Verb (Tag, Favorite, etc.) to Permission Action (Update, Delete, etc.) */
+        $this->route->request_task        = $task;
+        $this->route->request_task_values = $action_target;
+
+        return $this;
+    }
+
     /**
      * Set Path
      *
@@ -186,73 +329,5 @@ abstract class AbstractParameters extends AbstractAdapter implements RouteInterf
         }
 
         return $path;
-    }
-
-    /**
-     *  Redirect page
-     *
-     * @return  void
-     * @since   1.0
-     */
-    public function setRedirect()
-    {
-        /**
-         * @todo test with non-sef URLs
-         * $sef = $this->runtime_data->configuration_sef_url', 1);
-         *       if ($sef === 1) {
-         *
-         * $this->getResourceSEF();
-         *
-         * } else {
-         *
-         * $this->getResourceExtensionParameters();
-         *
-         * }
-         */
-
-        return;
-    }
-
-    // // // //
-
-    /**
-     * For non-read actions, retrieve task and values
-     *
-     * @return  $this
-     * @since   1.0
-     */
-    protected function setTaskParameters(array $parameters = array(), $search_for = array())
-    {
-        $route_parameters = array();
-
-        $i = $this->setIndexAtMax($parameters);
-
-
-        $path          = '';
-        $task          = '';
-        $action_target = '';
-
-        foreach ($parameters as $slug) {
-            if ($task === '') {
-                if (in_array($slug, $search_for)) {
-                    $task = $slug;
-                } else {
-                    if (trim($path) === '') {
-                    } else {
-                        $path .= ' / ';
-                    }
-                    $path .= $slug;
-                }
-            } else {
-                $action_target = $slug;
-                break;
-            }
-        }
-
-        /** Map Action Verb (Tag, Favorite, etc.) to Permission Action (Update, Delete, etc.) */
-        $this->route->request_task        = $task;
-        $this->route->request_task_values = $action_target;
-
-        return $this;
     }
 }

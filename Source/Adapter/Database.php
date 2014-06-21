@@ -11,7 +11,7 @@ namespace Molajo\Route\Adapter;
 use Exception;
 use CommonApi\Exception\RuntimeException;
 use CommonApi\Route\RouteInterface;
-use Molajo\Controller\ReadController;
+use CommonApi\Controller\ReadControllerInterface;
 
 /**
  * Database Handler for Route
@@ -21,7 +21,7 @@ use Molajo\Controller\ReadController;
  * @copyright  2014 Amy Stephen. All rights reserved.
  * @since      1.0.0
  */
-class Database extends AbstractParameters implements RouteInterface
+class Database extends AbstractRequest implements RouteInterface
 {
     /**
      * Resource Query
@@ -34,14 +34,16 @@ class Database extends AbstractParameters implements RouteInterface
     /**
      * Constructor
      *
-     * @param   object         $request
-     * @param   int            $url_force_ssl
-     * @param   int            $application_home_catalog_id
-     * @param   string         $application_path
-     * @param   int            $application_id
-     * @param   string         $base_url
-     * @param   array          $filters
-     * @param   ReadController $resource_query
+     * @param   object  $request
+     * @param   int     $url_force_ssl
+     * @param   int     $application_home_catalog_id
+     * @param   string  $application_path
+     * @param   int     $application_id
+     * @param   string  $base_url
+     * @param   array   $filters
+     * @param   array   $task_to_action
+     * @param   array   $page_types
+     * @param   ReadControllerInterface $resource_query
      *
      * @since   1.0
      */
@@ -53,7 +55,9 @@ class Database extends AbstractParameters implements RouteInterface
         $application_id,
         $base_url,
         array $filters = array(),
-        ReadController $resource_query
+        array $task_to_action = array(),
+        array $page_types = array(),
+        ReadControllerInterface $resource_query
     ) {
         parent::__construct(
             $request,
@@ -62,7 +66,10 @@ class Database extends AbstractParameters implements RouteInterface
             $application_path,
             $application_id,
             $base_url,
-            $filters
+            $task_to_action,
+            $filters,
+            $page_types,
+            $resource_query
         );
 
         $this->resource_query = $resource_query;

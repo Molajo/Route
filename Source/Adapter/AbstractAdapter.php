@@ -8,7 +8,6 @@
  */
 namespace Molajo\Route\Adapter;
 
-use CommonApi\Exception\RuntimeException;
 use CommonApi\Route\RouteInterface;
 use stdClass;
 
@@ -147,8 +146,8 @@ abstract class AbstractAdapter implements RouteInterface
         $this->application_path            = $application_path;
         $this->application_id              = $application_id;
         $this->base_url                    = $base_url;
-        $this->task_to_action              = $task_to_action;
         $this->filters                     = $filters;
+        $this->task_to_action              = $task_to_action;
 
         if ($page_types === array()) {
         } else {
@@ -201,54 +200,12 @@ abstract class AbstractAdapter implements RouteInterface
             return $this->route;
         }
 
-        if ((int)$this->request->is_secure === 1) {
+        if ((int)$this->request->secure === 1) {
             return $this->route;
         }
 
         $this->route->error_code      = 301;
         $this->route->redirect_to_url = $this->application_home_catalog_id;
-
-        return $this->route;
-    }
-
-    /**
-     * Determine if request is for home page
-     *
-     * @return  object
-     * @throws  \CommonApi\Exception\RuntimeException
-     * @since   1.0
-     */
-    public function verifyHome()
-    {
-        if ($this->verifyHomeEmptyPath() === true) {
-            return $this->route;
-        }
-
-        if ($this->verifyHomeSlash() === true) {
-            return $this->route;
-        }
-
-        if ($this->verifyHomeIndex() === true) {
-            return $this->route;
-        }
-
-        return $this->route;
-    }
-
-    /**
-     * Set Request
-     *
-     * @return  object
-     * @throws  \CommonApi\Exception\RuntimeException
-     * @since   1.0
-     */
-    public function setRequest()
-    {
-        $this->setAction();
-        $this->setBaseUrl();
-        $this->setRequestVariables();
-
-        $this->route->path = $this->setPath($this->filters);
 
         return $this->route;
     }
@@ -263,129 +220,5 @@ abstract class AbstractAdapter implements RouteInterface
     public function setRoute()
     {
         return $this->route;
-    }
-
-    /**
-     * Home: application path
-     *
-     * @return  boolean
-     * @throws  \CommonApi\Exception\RuntimeException
-     * @since   1.0
-     */
-    protected function verifyHomeEmptyPath()
-    {
-        if (strlen($this->application_path) === 0
-            || trim($this->application_path) === ''
-        ) {
-            $this->route->catalog_id = $this->application_home_catalog_id;
-            $this->route->home       = 1;
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Home: slash (redirect)
-     *
-     * @return  boolean
-     * @throws  \CommonApi\Exception\RuntimeException
-     * @since   1.0
-     */
-    protected function verifyHomeSlash()
-    {
-        if ($this->application_path === '/') {
-            $this->route->error_code     = 301;
-            $this->route->redirect_to_id = $this->application_home_catalog_id;
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Home: index.php (redirect)
-     *
-     * @return  object
-     * @throws  \CommonApi\Exception\RuntimeException
-     * @since   1.0
-     */
-    public function verifyHomeIndex()
-    {
-        if ($this->application_path === 'index.php'
-            || $this->application_path === 'index.php/'
-            || $this->application_path === 'index.php?'
-            || $this->application_path === '/index.php/'
-        ) {
-            $this->route->error_code     = 301;
-            $this->route->redirect_to_id = $this->application_home_catalog_id;
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Set Action from HTTP Method
-     *
-     * @return  $this
-     * @throws  \CommonApi\Exception\RuntimeException
-     * @since   1.0
-     */
-    protected function setAction()
-    {
-        $method = $this->request->method;
-        $method = strtoupper($method);
-
-        if ($method === 'POST') {
-            $action = 'create';
-        } elseif ($method === 'PUT') {
-            $action = 'update';
-        } elseif ($method === 'DELETE') {
-            $action = 'delete';
-        } else {
-            $method = 'GET';
-            $action = 'read';
-        }
-
-        $this->route->action = $action;
-        $this->route->method = $method;
-
-        return $this;
-    }
-
-    /**
-     * Set Base Url
-     *
-     * @return  $this
-     * @throws  \CommonApi\Exception\RuntimeException
-     * @since   1.0
-     */
-    protected function setBaseUrl()
-    {
-        $this->route->base_url = $this->base_url;
-
-        return $this->route;
-    }
-
-    /**
-     * Set Request Variables
-     *
-     * @return  $this
-     * @throws  \CommonApi\Exception\RuntimeException
-     * @since   1.0
-     */
-    protected function setRequestVariables()
-    {
-        if ($this->route->action === 'read') {
-            $this->setParameters('filters', $this->filters);
-        } else {
-            $this->setParameters('task', $this->runtime_data->permission_tasks);
-        }
-
-        return $this;
     }
 }
