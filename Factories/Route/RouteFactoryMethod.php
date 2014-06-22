@@ -35,8 +35,7 @@ class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, 
     {
         $options['product_name']      = basename(__DIR__);
         $options['product_namespace'] = null;
-echo 'yes';
-        die;
+
         parent::__construct($options);
     }
 
@@ -181,16 +180,6 @@ echo 'yes';
             'query:///Molajo//Model//Datasource//Catalog.xml',
             array('runtime_data' => $this->dependencies['Runtimedata'])
         );
-
-        echo '<pre>';
-        var_dump(array(
-                $url_force_ssl,
-                $application_home_catalog_id,
-                $application_path,
-                $application_id,
-                $base_url
-            ));
-        die;
 
         $class = 'Molajo\\Route\\Adapter\\Database';
 

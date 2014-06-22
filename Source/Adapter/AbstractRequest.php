@@ -33,8 +33,6 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
         $this->setBaseUrl();
         $this->setRequestVariables();
 
-        $this->route->path = $this->setPath($this->filters);
-
         return $this->route;
     }
 
@@ -91,7 +89,7 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
     protected function setRequestVariables()
     {
         if ($this->route->action === 'read') {
-            $this->setParameters('filters', $this->filters);
+            $this->setParameters('request_task_values', $this->filters);
         } else {
             $this->setParameters('task', $this->runtime_data->permission_tasks);
         }
@@ -110,14 +108,34 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
      */
     protected function setParameters($route_object_item, array $search_for = array())
     {
+        $this->removePathSlash();
+
         $parameters = $this->getParameters();
+
         if (count($parameters) === 0) {
             return $this;
         }
 
         $this->route->$route_object_item = $this->getParameterPairs($parameters, $search_for);
 
-        $this->setPageType();
+        $this->removePathSlash();
+
+        return $this;
+    }
+
+    /**
+     * Remove Path Slash
+     *
+     * @param   string $path
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    protected function removePathSlash()
+    {
+        if (substr($this->application_path, 0, 1) === '/') {
+            $this->application_path = substr($this->application_path, 1, strlen($this->application_path) - 1);
+        }
 
         return $this;
     }
@@ -130,15 +148,7 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
      */
     protected function getParameters()
     {
-        $parameters = explode('/', $this->application_path);
-
-        if (count($this->request->query) > 0) {
-            foreach ($this->request->query as $parameter) {
-                $parameters[] = $parameter;
-            }
-        }
-
-        return $parameters;
+        return explode('/', $this->application_path);
     }
 
     /**
@@ -156,18 +166,73 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
         $i = $this->setIndexAtMax($parameters);
 
         while ($i > 0) {
-            $parsed = $this->parseParameterPair($parameters[$i], $search_for);
 
-            if ($parsed === array()) {
-                $i = -1;
-            } else {
-                $route_parameters[] = $parsed;
+            $value = $this->getNode($i, $parameters, 1);
+
+            $filter = $this->getNode($i, $parameters, 2);
+
+            $parsed = $this->parseParameterPair($filter, $search_for);
+            if ($parsed === false) {
+                break;
             }
 
-            $i = $this->decrementIndex($i);
+            $route_parameters[$filter] = $value;
+            $i = $i - 2;
         }
 
+        $this->getPath($i, $parameters);
+
         return $route_parameters;
+    }
+
+    /**
+     * Set Path
+     *
+     * @param   integer $i
+     * @param   array   $parameters
+     *
+     * @return  integer
+     * @since   1.0
+     */
+    protected function getPath($i, array $parameters = array())
+    {
+        $path = '';
+
+        while ($i > 0) {
+
+            if ($path === '') {
+            } else {
+                $path = '/' . $path;
+            }
+            $path = $this->getNode($i, $parameters, 1) . $path;
+
+            $i = $i - 1;
+        }
+
+        $this->route->path = $path;
+
+        return $this;
+    }
+
+    /**
+     * Get Node
+     *
+     * @param   integer $i
+     * @param   array   $parameters
+     * @param   integer $decrement
+     *
+     * @return  integer
+     * @since   1.0
+     */
+    protected function getNode($i, array $parameters = array(), $decrement)
+    {
+        $i = $this->decrementIndex($i, $decrement);
+
+        if (isset($parameters[$i]) === true) {
+            return $parameters[$i];
+        }
+
+        return false;
     }
 
     /**
@@ -180,39 +245,39 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
      */
     protected function setIndexAtMax(array $parameters = array())
     {
-        return count($parameters) - 1;
+        return count($parameters);
     }
 
     /**
      * Decrement Index
      *
      * @param   integer $i
+     * @param   integer $decrement
      *
      * @return  integer
      * @since   1.0
      */
-    protected function decrementIndex($i)
+    protected function decrementIndex($i, $decrement)
     {
-        return $i - 1;
+        return $i - $decrement;
     }
 
     /**
      * Parse Parameter Pair for specific values
      *
-     * @param   array $pair
+     * @param   string $filter
+     * @param   array  $search_for
      *
-     * @return  array
+     * @return  boolean
      * @since   1.0
      */
-    protected function parseParameterPair(array $pair = array(), array $search_for = array())
+    protected function parseParameterPair($filter, array $search_for = array())
     {
-        $parsed = explode('=', $pair);
-
-        if (in_array($parsed[0], $search_for)) {
-            return $pair;
+        if (in_array($filter, $search_for)) {
+            return true;
         }
 
-        return array();
+        return false;
     }
 
     /**
@@ -223,111 +288,16 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
      */
     protected function setPageType()
     {
-        if (in_array($this->page_type['new'], $this->route->filters_array)) {
-            $this->page_type = $this->page_type['new'];
+        if (in_array($this->page_types['new'], $this->filters)) {
+            $this->request->page_type = $this->page_types['new'];
 
-        } elseif (in_array($this->page_type['edit'], $this->route->filters_array)) {
-            $this->page_type = $this->page_type['edit'];
+        } elseif (in_array($this->page_types['edit'], $this->filters)) {
+            $this->request->page_type = $this->page_types['edit'];
 
-        } elseif (in_array($this->page_type['delete'], $this->route->filters_array)) {
-            $this->page_type = $this->page_type['delete'];
+        } elseif (in_array($this->page_types['delete'], $this->filters)) {
+            $this->request->page_type = $this->page_types['delete'];
         }
 
         return $this;
-    }
-
-    // // // //
-
-    /**
-     * For non-read actions, retrieve task and values
-     *
-     * @return  $this
-     * @since   1.0
-     */
-    protected function setTaskParameters(array $parameters = array(), $search_for = array())
-    {
-        $route_parameters = array();
-
-        $i = $this->setIndexAtMax($parameters);
-
-
-        $path          = '';
-        $task          = '';
-        $action_target = '';
-
-        foreach ($parameters as $slug) {
-            if ($task === '') {
-                if (in_array($slug, $search_for)) {
-                    $task = $slug;
-                } else {
-                    if (trim($path) === '') {
-                    } else {
-                        $path .= ' / ';
-                    }
-                    $path .= $slug;
-                }
-            } else {
-                $action_target = $slug;
-                break;
-            }
-        }
-
-        /** Map Action Verb (Tag, Favorite, etc.) to Permission Action (Update, Delete, etc.) */
-        $this->route->request_task        = $task;
-        $this->route->request_task_values = $action_target;
-
-        return $this;
-    }
-
-    /**
-     * Set Path
-     *
-     * @param   array $remove
-     *
-     * @return  string
-     * @throws  \CommonApi\Exception\RuntimeException
-     * @since   1.0
-     */
-    protected function setPath(array $remove = array())
-    {
-        $path = $this->removePathSlash($this->application_path);
-
-        return $this->removeUrlNodes($path, $remove);
-    }
-
-    /**
-     * Remove Path Slash
-     *
-     * @param   string $path
-     *
-     * @return  $path
-     * @since   1.0
-     */
-    protected function removePathSlash($path)
-    {
-        if (substr($path, 0, 1) === '/') {
-            $path = substr($path, 1, strlen($path) - 1);
-        }
-
-        return $path;
-    }
-
-    /**
-     * Decrement Index
-     *
-     * @param   string $path
-     * @param   array  $remove
-     *
-     * @return  integer
-     * @since   1.0
-     */
-    protected function removeUrlNodes($path, array $remove = array())
-    {
-        foreach ($remove as $item) {
-            $found = strrpos($path, '/' . $item);
-            $path  = substr($path, 0, $found);
-        }
-
-        return $path;
     }
 }

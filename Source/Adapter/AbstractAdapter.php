@@ -30,14 +30,6 @@ abstract class AbstractAdapter implements RouteInterface
     protected $request;
 
     /**
-     * Page Type
-     *
-     * @var    string
-     * @since  1.0
-     */
-    protected $page_type = null;
-
-    /**
      * Force SSL Indicator
      *
      * @var    integer
@@ -175,7 +167,6 @@ abstract class AbstractAdapter implements RouteInterface
         $this->route->method              = '';
         $this->route->base_url            = '';
         $this->route->path                = '';
-        $this->route->filters_array       = array();
         $this->route->post_variable_array = array();
         $this->route->request_task        = '';
         $this->route->request_task_values = array();

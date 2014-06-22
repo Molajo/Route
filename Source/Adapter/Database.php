@@ -196,12 +196,6 @@ class Database extends AbstractRequest implements RouteInterface
 
         $this->route->catalog_id = $this->route->id;
 
-        if ($this->page_type === null) {
-
-        } elseif ($this->route->page_type === 'Item') {
-            $this->route->page_type = $this->page_type;
-        }
-
         return $this->route;
     }
 }

@@ -52,7 +52,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
     protected function verifyHomeEmptyPath()
     {
         if (strlen($this->application_path) === 0
-            || trim($this->application_path) === ''
+            || $this->application_path === ''
         ) {
             $this->route->catalog_id = $this->application_home_catalog_id;
             $this->route->home       = 1;
@@ -73,7 +73,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
     {
         if ($this->application_path === '/') {
             $this->route->error_code     = 301;
-            $this->route->redirect_to_id = $this->application_home_catalog_id;
+            $this->route->redirect_to_url = $this->application_home_catalog_id;
 
             return true;
         }
@@ -95,7 +95,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
             || $this->application_path === '/index.php/'
         ) {
             $this->route->error_code     = 301;
-            $this->route->redirect_to_id = $this->application_home_catalog_id;
+            $this->route->redirect_to_url = $this->application_home_catalog_id;
 
             return true;
         }

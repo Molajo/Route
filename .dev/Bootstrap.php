@@ -16,6 +16,8 @@ include_once $base . '/vendor/autoload.php';
 $classmap                          = array();
 $results                           = createClassMap($base . '/Source/Adapter', 'Molajo\\Route\\Adapter\\');
 $classmap                          = array_merge($classmap, $results);
+$results                           = createClassMap($base . '/.dev/Mocks', 'Molajo\\Query\\');
+$classmap                          = array_merge($classmap, $results);
 $classmap['Molajo\\Route\\Driver'] = $base . '/Source/Driver.php';
 
 spl_autoload_register(
