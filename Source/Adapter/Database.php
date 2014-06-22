@@ -83,21 +83,12 @@ class Database extends AbstractRequest implements RouteInterface
      */
     public function setRoute()
     {
-        $this->setRouteQuery();
+        $this->buildRouteQuery();
 
-        try {
-            $item = $this->resource_query->getData();
-
-        } catch (Exception $e) {
-            throw new RuntimeException($e->getMessage());
-        }
-
-        $this->route->model_registry = $this->resource_query->getModelRegistry('*');
+        $item = $this->runRouteQuery();
 
         if (count($item) === 0 || $item === false) {
-            $this->route->route_found = 0;
-
-            return $this->route;
+            return $this->setRouteNotFound();
         }
 
         if ((int)$item->redirect_to_id > 0) {
@@ -110,12 +101,30 @@ class Database extends AbstractRequest implements RouteInterface
     }
 
     /**
+     * Execute Route Query
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    public function runRouteQuery()
+    {
+        try {
+            $item = $this->resource_query->getData();
+
+        } catch (Exception $e) {
+            throw new RuntimeException($e->getMessage());
+        }
+
+        return $item;
+    }
+
+    /**
      * Set Route Query
      *
      * @return  $this
      * @since   1.0
      */
-    public function setRouteQuery()
+    public function buildRouteQuery()
     {
         $this->resource_query->setModelRegistry('use_special_joins', 1);
         $this->resource_query->setModelRegistry('process_events', 0);
@@ -158,6 +167,19 @@ class Database extends AbstractRequest implements RouteInterface
     }
 
     /**
+     * Set Route Not Found
+     *
+     * @return  object
+     * @since   1.0
+     */
+    public function setRouteNotFound()
+    {
+        $this->route->route_found = 0;
+
+        return $this->route;
+    }
+
+    /**
      * Set Route Redirect
      *
      * @param   object $item
@@ -182,6 +204,8 @@ class Database extends AbstractRequest implements RouteInterface
      */
     public function setRouteData($item)
     {
+        $this->route->model_registry = $this->resource_query->getModelRegistry('*');
+
         $this->route->route_found = 1;
         $this->route->home        = 0;
 

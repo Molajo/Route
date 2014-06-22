@@ -185,6 +185,7 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
      * Traverse backwards through parameter pairs to find filters
      *
      * @param  array $parameters
+     * @param integer $i
      *
      * @return array
      * @since  1.0
