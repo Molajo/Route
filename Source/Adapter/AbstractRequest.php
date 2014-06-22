@@ -126,7 +126,6 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
     /**
      * Remove Path Slash
      *
-     * @param   string $path
      *
      * @return  $this
      * @since   1.0
@@ -167,16 +166,13 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
 
         while ($i > 0) {
 
-            $value = $this->getNode($i, $parameters, 1);
+            $results = $this->getParameterPair($i, $parameters, $search_for, $route_parameters);
 
-            $filter = $this->getNode($i, $parameters, 2);
-
-            $parsed = $this->parseParameterPair($filter, $search_for);
-            if ($parsed === false) {
-                break;
+            if ($results === false) {
+            } else {
+                $route_parameters = $results;
             }
 
-            $route_parameters[$filter] = $value;
             $i = $i - 2;
         }
 
@@ -186,12 +182,39 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
     }
 
     /**
+     * Traverse backwards through parameter pairs to find filters
+     *
+     * @param  array $parameters
+     *
+     * @return array
+     * @since  1.0
+     */
+    protected function getParameterPair(
+        $i,
+        array $parameters = array(),
+        array $search_for = array(),
+        array $route_parameters = array()
+    ) {
+        $value  = $this->getNode($i, $parameters, 1);
+        $filter = $this->getNode($i, $parameters, 2);
+
+        $parsed = $this->parseParameterPair($filter, $search_for);
+        if ($parsed === false) {
+            return false;
+        }
+
+        $route_parameters[$filter] = $value;
+
+        return $value;
+    }
+
+    /**
      * Set Path
      *
      * @param   integer $i
      * @param   array   $parameters
      *
-     * @return  integer
+     * @return  AbstractRequest
      * @since   1.0
      */
     protected function getPath($i, array $parameters = array())
@@ -224,7 +247,7 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
      * @return  integer
      * @since   1.0
      */
-    protected function getNode($i, array $parameters = array(), $decrement)
+    protected function getNode($i, array $parameters = array(), $decrement = 1)
     {
         $i = $this->decrementIndex($i, $decrement);
 

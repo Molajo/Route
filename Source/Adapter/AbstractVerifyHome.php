@@ -54,9 +54,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
         if (strlen($this->application_path) === 0
             || $this->application_path === ''
         ) {
-            $this->route->catalog_id = $this->application_home_catalog_id;
-            $this->route->home       = 1;
-
+            $this->setHomeCatalog();
             return true;
         }
 
@@ -72,9 +70,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
     protected function verifyHomeSlash()
     {
         if ($this->application_path === '/') {
-            $this->route->error_code     = 301;
-            $this->route->redirect_to_url = $this->application_home_catalog_id;
-
+            $this->setHomeRedirect();
             return true;
         }
 
@@ -84,7 +80,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
     /**
      * Home: index.php (redirect)
      *
-     * @return  object
+     * @return  boolean
      * @since   1.0
      */
     public function verifyHomeIndex()
@@ -94,12 +90,38 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
             || $this->application_path === 'index.php?'
             || $this->application_path === '/index.php/'
         ) {
-            $this->route->error_code     = 301;
-            $this->route->redirect_to_url = $this->application_home_catalog_id;
-
+            $this->setHomeRedirect();
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Home: set redirect
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    protected function setHomeCatalog()
+    {
+        $this->route->catalog_id = $this->application_home_catalog_id;
+        $this->route->home       = 1;
+
+        return $this;
+    }
+
+    /**
+     * Home: set redirect
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    protected function setHomeRedirect()
+    {
+        $this->route->error_code      = 301;
+        $this->route->redirect_to_url = $this->application_home_catalog_id;
+
+        return $this;
     }
 }

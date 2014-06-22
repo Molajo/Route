@@ -34,15 +34,15 @@ class Database extends AbstractRequest implements RouteInterface
     /**
      * Constructor
      *
-     * @param   object  $request
-     * @param   int     $url_force_ssl
-     * @param   int     $application_home_catalog_id
-     * @param   string  $application_path
-     * @param   int     $application_id
-     * @param   string  $base_url
-     * @param   array   $filters
-     * @param   array   $task_to_action
-     * @param   array   $page_types
+     * @param   object                  $request
+     * @param   int                     $url_force_ssl
+     * @param   int                     $application_home_catalog_id
+     * @param   string                  $application_path
+     * @param   int                     $application_id
+     * @param   string                  $base_url
+     * @param   array                   $filters
+     * @param   array                   $task_to_action
+     * @param   array                   $page_types
      * @param   ReadControllerInterface $resource_query
      *
      * @since   1.0
@@ -78,45 +78,45 @@ class Database extends AbstractRequest implements RouteInterface
     /**
      * For Route, retrieve Catalog Item, either for the SEF URL or the Catalog ID
      *
-     * 404 Error when no Catalog Item is found
-     *
      * @return  object
      * @since   1.0
-     * @throws  \CommonApi\Exception\RuntimeException
      */
     public function setRoute()
     {
-        // todo: split out the permissions
+        $this->setRouteQuery();
 
-        /* test 1: Application 2, Site 1
+        try {
+            $item = $this->resource_query->getData();
 
-            Retrieve Catalog ID: 831 using Source ID: 1 and Catalog Type ID: 1000
+        } catch (Exception $e) {
+            throw new RuntimeException($e->getMessage());
+        }
 
-                     $catalog_id = 0;
-                     $url_sef_request = '';
-                     $source_id = 1;
-                     $catalog_type_id = 1000;
-        */
+        $this->route->model_registry = $this->resource_query->getModelRegistry('*');
 
-        /* test 2: Application 2, Site 1
+        if (count($item) === 0 || $item === false) {
+            $this->route->route_found = 0;
 
-            Retrieve Catalog ID: 1075 using $url_sef_request = 'articles'
+            return $this->route;
+        }
 
-                $catalog_id = 0;
-                $url_sef_request = 'articles';
-                $source_id = 0;
-                $catalog_type_id = 0;
-        */
+        if ((int)$item->redirect_to_id > 0) {
+            return $this->setRouteRedirect($item);
+        }
 
-        /* test 3: Application 2, Site 1
+        $this->setRouteData($item);
 
-            Retrieve Item: for Catalog ID 1075
+        return $this->route;
+    }
 
-                $catalog_id = 1075;
-                $url_sef_request = '';
-                $source_id = 0;
-                $catalog_type_id = 0;
-         */
+    /**
+     * Set Route Query
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    public function setRouteQuery()
+    {
         $this->resource_query->setModelRegistry('use_special_joins', 1);
         $this->resource_query->setModelRegistry('process_events', 0);
         $this->resource_query->setModelRegistry('query_object', 'item');
@@ -154,32 +154,34 @@ class Database extends AbstractRequest implements RouteInterface
 //todo: fix application issue
         );
 
-        /** Run the Query */
-        try {
-            $item = $this->resource_query->getData();
+        return $this;
+    }
 
-        } catch (Exception $e) {
-            throw new RuntimeException($e->getMessage());
-        }
+    /**
+     * Set Route Redirect
+     *
+     * @param   object $item
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    public function setRouteRedirect($item)
+    {
+        $this->route->redirect_to_id = (int)$item->redirect_to_id;
 
-        $this->route->model_registry = $this->resource_query->getModelRegistry('*');
+        return $this;
+    }
 
-        /** 404 */
-        if (count($item) === 0 || $item === false) {
-            $this->route->route_found = 0;
-
-            return $this->route;
-        }
-
-        /** Redirect */
-        if ((int)$item->redirect_to_id === 0) {
-        } else {
-            $this->route->redirect_to_id = (int)$item->redirect_to_id;
-
-            return $this->route;
-        }
-
-        /** Found */
+    /**
+     * Set Route Data
+     *
+     * @param   object $item
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    public function setRouteData($item)
+    {
         $this->route->route_found = 1;
         $this->route->home        = 0;
 
@@ -196,6 +198,6 @@ class Database extends AbstractRequest implements RouteInterface
 
         $this->route->catalog_id = $this->route->id;
 
-        return $this->route;
+        return $this;
     }
 }
