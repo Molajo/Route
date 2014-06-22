@@ -130,37 +130,33 @@ class Database extends AbstractRequest implements RouteInterface
         $this->resource_query->setModelRegistry('process_events', 0);
         $this->resource_query->setModelRegistry('query_object', 'item');
 
-        $this->resource_query->where(
-            'column',
-            $this->resource_query->getModelRegistry('primary_prefix', 'a') . '.' . 'sef_request',
-            '=',
-            'string',
-            $this->route->path
-        );
+        $this->buildRouteQueryWhereClause('sef_request', '=', 'string', $this->route->path);
+        $this->buildRouteQueryWhereClause('page_type', '<>', 'string', 'link');
+        $this->buildRouteQueryWhereClause('enabled', '=', 'integer', 1);
+        $this->buildRouteQueryWhereClause('application_id', '=', 'integer', $this->application_id);
 
-        $this->resource_query->where(
-            'column',
-            $this->resource_query->getModelRegistry('primary_prefix', 'a') . '.' . 'page_type',
-            '<>',
-            'string',
-            'link'
-        );
+        return $this;
+    }
 
+    /**
+     * Set Route Query Where Clause
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    public function buildRouteQueryWhereClause(
+        $column_name,
+        $comparison_operator,
+        $filter,
+        $compare_to
+    )
+    {
         $this->resource_query->where(
             'column',
-            $this->resource_query->getModelRegistry('primary_prefix', 'a') . '.' . 'enabled',
-            '=',
-            'integer',
-            1
-        );
-
-        $this->resource_query->where(
-            'column',
-            $this->resource_query->getModelRegistry('primary_prefix', 'a') . '.' . 'application_id',
-            '=',
-            'integer',
-            2
-//todo: fix application issue
+            $this->resource_query->getModelRegistry('primary_prefix', 'a') . '.' . $column_name,
+            $comparison_operator,
+            $filter,
+            $compare_to
         );
 
         return $this;

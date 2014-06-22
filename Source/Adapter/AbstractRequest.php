@@ -118,14 +118,11 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
 
         $this->route->$route_object_item = $this->getParameterPairs($parameters, $search_for);
 
-        $this->removePathSlash();
-
         return $this;
     }
 
     /**
      * Remove Path Slash
-     *
      *
      * @return  $this
      * @since   1.0
@@ -154,6 +151,7 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
      * Traverse backwards through parameter pairs to find filters
      *
      * @param  array $parameters
+     * @param  array $search_for
      *
      * @return array
      * @since  1.0
@@ -169,10 +167,10 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
             $results = $this->getParameterPair($i, $parameters, $search_for, $route_parameters);
 
             if ($results === false) {
-            } else {
-                $route_parameters = $results;
+                break;
             }
 
+            $route_parameters = $results;
             $i = $i - 2;
         }
 
@@ -184,8 +182,10 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
     /**
      * Traverse backwards through parameter pairs to find filters
      *
-     * @param  array $parameters
-     * @param integer $i
+     * @param  integer $i
+     * @param  array   $parameters
+     * @param  array   $search_for
+     * @param  array   $route_parameters
      *
      * @return array
      * @since  1.0
@@ -206,7 +206,7 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
 
         $route_parameters[$filter] = $value;
 
-        return $value;
+        return $route_parameters;
     }
 
     /**
@@ -228,6 +228,7 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
             } else {
                 $path = '/' . $path;
             }
+
             $path = $this->getNode($i, $parameters, 1) . $path;
 
             $i = $i - 1;
