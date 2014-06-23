@@ -47,7 +47,7 @@ class Database extends AbstractRequest implements RouteInterface
         array $filters = array(),
         array $task_to_action = array(),
         array $page_types = array(),
-        ReadControllerInterface $resource_query
+        ReadControllerInterface $resource_query = null
     ) {
         parent::__construct(
             $request,
@@ -75,7 +75,7 @@ class Database extends AbstractRequest implements RouteInterface
             return $this->setRouteNotFound();
         }
 
-        if ((int)$item->redirect_to_id > 0) {
+        if ((int)$this->route->redirect_to_id > 0) {
             return $this->setRouteRedirect($item);
         }
 
@@ -125,6 +125,10 @@ class Database extends AbstractRequest implements RouteInterface
     /**
      * Set Route Query Where Clause
      *
+     * @param string $column_name
+     * @param string $comparison_operator
+     * @param string $filter
+     *
      * @return  $this
      * @since   1.0
      */
@@ -133,8 +137,7 @@ class Database extends AbstractRequest implements RouteInterface
         $comparison_operator,
         $filter,
         $compare_to
-    )
-    {
+    ) {
         $this->resource_query->where(
             'column',
             $this->resource_query->getModelRegistry('primary_prefix', 'a') . '.' . $column_name,
@@ -162,7 +165,7 @@ class Database extends AbstractRequest implements RouteInterface
     /**
      * Set Route Redirect
      *
-     * @param   object $item
+     * @param   Database $item
      *
      * @return  $this
      * @since   1.0
@@ -177,7 +180,7 @@ class Database extends AbstractRequest implements RouteInterface
     /**
      * Set Route Data
      *
-     * @param   object $item
+     * @param   Database $item
      *
      * @return  $this
      * @since   1.0

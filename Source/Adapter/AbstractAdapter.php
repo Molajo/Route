@@ -162,6 +162,7 @@ abstract class AbstractAdapter implements RouteInterface
     /**
      * Initialise Single Property
      *
+     * @param string $property_name
      * @return  $this
      * @since   1.0
      */
