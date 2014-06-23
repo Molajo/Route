@@ -82,9 +82,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $request->query        = "";
         $request->parameters   = array();
 
-        $application_home_catalog_id = 1072;
-        $application_id              = 2;
-        $base_url                    = 'http://site2/admin/';
+        $request->url_force_ssl               = $url_force_ssl;
+        $request->application_home_catalog_id = 1072;
+        $request->application_path            = $application_path;
+        $request->application_id              = 2;
+        $request->base_url                    = 'http://site2/admin/';
 
         $filters   = array();
         $filters[] = 'author';
@@ -112,11 +114,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
         return new Database(
             $request,
-            $url_force_ssl,
-            $application_home_catalog_id,
-            $application_path,
-            $application_id,
-            $base_url,
             $filters,
             $task_to_action,
             $page_types,
@@ -183,8 +180,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($route->base_url, '');
         $this->assertEquals($route->path, '');
         $this->assertEquals($route->post_variable_array, array());
-        $this->assertEquals($route->request_task, '');
-        $this->assertEquals($route->request_task_values, array());
+        $this->assertEquals($route->filters, array());
         $this->assertEquals($route->model_name, '');
         $this->assertEquals($route->model_type, '');
         $this->assertEquals($route->model_registry_name, '');
@@ -244,8 +240,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($route->base_url, '');
         $this->assertEquals($route->path, '');
         $this->assertEquals($route->post_variable_array, array());
-        $this->assertEquals($route->request_task, '');
-        $this->assertEquals($route->request_task_values, array());
+        $this->assertEquals($route->filters, array());
         $this->assertEquals($route->model_name, '');
         $this->assertEquals($route->model_type, '');
         $this->assertEquals($route->model_registry_name, '');
@@ -305,8 +300,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($route->base_url, '');
         $this->assertEquals($route->path, '');
         $this->assertEquals($route->post_variable_array, array());
-        $this->assertEquals($route->request_task, '');
-        $this->assertEquals($route->request_task_values, array());
+        $this->assertEquals($route->filters, array());
         $this->assertEquals($route->model_name, '');
         $this->assertEquals($route->model_type, '');
         $this->assertEquals($route->model_registry_name, '');

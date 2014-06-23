@@ -54,8 +54,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
         if (strlen($this->application_path) === 0
             || $this->application_path === ''
         ) {
-            $this->setHomeCatalog();
-            return true;
+            return $this->setHomeCatalog();
         }
 
         return false;
@@ -91,6 +90,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
             || $this->application_path === '/index.php/'
         ) {
             $this->setHomeRedirect();
+
             return true;
         }
 
@@ -100,7 +100,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
     /**
      * Home: set redirect
      *
-     * @return  $this
+     * @return  boolean
      * @since   1.0
      */
     protected function setHomeCatalog()
@@ -108,7 +108,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
         $this->route->catalog_id = $this->application_home_catalog_id;
         $this->route->home       = 1;
 
-        return $this;
+        return true;
     }
 
     /**

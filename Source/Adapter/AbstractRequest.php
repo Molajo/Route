@@ -30,6 +30,7 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
     public function setRequest()
     {
         $this->setAction();
+        $this->setPageType();
         $this->setBaseUrl();
         $this->setRequestVariables();
 
@@ -46,21 +47,21 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
     protected function setAction()
     {
         $method = $this->request->method;
-        $method = strtoupper($method);
+        $this->route->method = strtoupper($method);
 
-        if ($method === 'POST') {
-            $action = 'create';
-        } elseif ($method === 'PUT') {
-            $action = 'update';
-        } elseif ($method === 'DELETE') {
-            $action = 'delete';
+        if ($this->route->method === 'POST') {
+            $this->route->action = 'create';
+
+        } elseif ($this->route->method === 'PUT') {
+            $this->route->action = 'update';
+
+        } elseif ($this->route->method === 'DELETE') {
+            $this->route->action = 'delete';
+
         } else {
-            $method = 'GET';
-            $action = 'read';
+            $this->route->method = 'GET';
+            $this->route->action = 'read';
         }
-
-        $this->route->action = $action;
-        $this->route->method = $method;
 
         return $this;
     }
@@ -89,9 +90,9 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
     protected function setRequestVariables()
     {
         if ($this->route->action === 'read') {
-            $this->setParameters('request_task_values', $this->filters);
+            $this->setParameters('filters', $this->filters);
         } else {
-            $this->setParameters('task', $this->runtime_data->permission_tasks);
+            $this->setParameters('task', $this->task_to_action);
         }
 
         return $this;
@@ -165,7 +166,6 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
         while ($i > 0) {
 
             $results = $this->getParameterPair($i, $parameters, $search_for, $route_parameters);
-
             if ($results === false) {
                 break;
             }
@@ -230,7 +230,6 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
             }
 
             $path = $this->getNode($i, $parameters, 1) . $path;
-
             $i = $i - 1;
         }
 
@@ -314,13 +313,15 @@ abstract class AbstractRequest extends AbstractVerifyHome implements RouteInterf
     protected function setPageType()
     {
         if (in_array($this->page_types['new'], $this->filters)) {
-            $this->request->page_type = $this->page_types['new'];
+            $this->route->page_type = $this->page_types['new'];
 
         } elseif (in_array($this->page_types['edit'], $this->filters)) {
-            $this->request->page_type = $this->page_types['edit'];
+            $this->route->page_type = $this->page_types['edit'];
 
         } elseif (in_array($this->page_types['delete'], $this->filters)) {
-            $this->request->page_type = $this->page_types['delete'];
+            $this->route->page_type = $this->page_types['delete'];
+        } else {
+            $this->route->page_type = $this->page_types['view'];
         }
 
         return $this;

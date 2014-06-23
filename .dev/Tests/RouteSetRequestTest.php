@@ -83,9 +83,11 @@ class RouteSetRequestTest extends \PHPUnit_Framework_TestCase
         $request->query        = $query;
         $request->parameters   = array();
 
-        $application_home_catalog_id = 1072;
-        $application_id              = 2;
-        $base_url                    = 'http://site2/admin/';
+        $request->url_force_ssl               = $url_force_ssl;
+        $request->application_home_catalog_id = 1072;
+        $request->application_path            = $application_path;
+        $request->application_id              = 2;
+        $request->base_url                    = 'http://site2/admin/';
 
         $filters   = array();
         $filters[] = 'author';
@@ -94,8 +96,6 @@ class RouteSetRequestTest extends \PHPUnit_Framework_TestCase
         $filters[] = 'date';
         $filters[] = 'theme';
         $filters[] = 'page';
-        $filters[] = 'edit';
-        $filters[] = 'delete';
 
         $task_to_action              = array();
         $task_to_action['order']     = 'view';
@@ -106,18 +106,14 @@ class RouteSetRequestTest extends \PHPUnit_Framework_TestCase
         $page_types = array(
             'new'    => 'new',
             'edit'   => 'edit',
-            'delete' => 'delete'
+            'delete' => 'delete',
+            'view'   => 'view'
         );
 
         $resource_query = new MockReadController();
 
         return new Database(
             $request,
-            $url_force_ssl,
-            $application_home_catalog_id,
-            $application_path,
-            $application_id,
-            $base_url,
             $filters,
             $task_to_action,
             $page_types,
@@ -218,12 +214,11 @@ class RouteSetRequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($route->base_url, 'http://site2/admin/');
         $this->assertEquals($route->path, 'articles');
         $this->assertEquals($route->post_variable_array, array());
-        $this->assertEquals($route->request_task, '');
-        $this->assertEquals($route->request_task_values, array('tag' => 'rant'));
+        $this->assertEquals($route->filters, array('tag' => 'rant'));
         $this->assertEquals($route->model_name, '');
         $this->assertEquals($route->model_type, '');
         $this->assertEquals($route->model_registry_name, '');
-        $this->assertEquals($route->page_type, '');
+        $this->assertEquals($route->page_type, 'view');
 
         return $this;
     }
@@ -285,12 +280,11 @@ class RouteSetRequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($route->base_url, 'http://site2/admin/');
         $this->assertEquals($route->path, 'archive/articles');
         $this->assertEquals($route->post_variable_array, array());
-        $this->assertEquals($route->request_task, '');
-        $this->assertEquals($route->request_task_values, array('tag' => 'rant', 'author' => 'dog'));
+        $this->assertEquals($route->filters, array('tag' => 'rant', 'author' => 'dog'));
         $this->assertEquals($route->model_name, '');
         $this->assertEquals($route->model_type, '');
         $this->assertEquals($route->model_registry_name, '');
-        $this->assertEquals($route->page_type, '');
+        $this->assertEquals($route->page_type, 'view');
 
         return $this;
     }

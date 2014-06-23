@@ -35,11 +35,6 @@ class Database extends AbstractRequest implements RouteInterface
      * Constructor
      *
      * @param   object                  $request
-     * @param   int                     $url_force_ssl
-     * @param   int                     $application_home_catalog_id
-     * @param   string                  $application_path
-     * @param   int                     $application_id
-     * @param   string                  $base_url
      * @param   array                   $filters
      * @param   array                   $task_to_action
      * @param   array                   $page_types
@@ -49,11 +44,6 @@ class Database extends AbstractRequest implements RouteInterface
      */
     public function __construct(
         $request,
-        $url_force_ssl,
-        $application_home_catalog_id,
-        $application_path,
-        $application_id,
-        $base_url,
         array $filters = array(),
         array $task_to_action = array(),
         array $page_types = array(),
@@ -61,15 +51,9 @@ class Database extends AbstractRequest implements RouteInterface
     ) {
         parent::__construct(
             $request,
-            $url_force_ssl,
-            $application_home_catalog_id,
-            $application_path,
-            $application_id,
-            $base_url,
-            $task_to_action,
             $filters,
-            $page_types,
-            $resource_query
+            $task_to_action,
+            $page_types
         );
 
         $this->resource_query = $resource_query;

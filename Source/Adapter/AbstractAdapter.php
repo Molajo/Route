@@ -103,50 +103,74 @@ abstract class AbstractAdapter implements RouteInterface
         = array(
             'new'    => 'new',
             'edit'   => 'edit',
-            'delete' => 'delete'
+            'delete' => 'delete',
+            'view'   => 'view'
         );
 
     /**
      * Constructor
      *
-     * @param   object  $request
-     * @param   integer $url_force_ssl
-     * @param   integer $application_home_catalog_id
-     * @param   string  $application_path
-     * @param   integer $application_id
-     * @param   string  $base_url
-     * @param   array   $task_to_action
-     * @param   array   $filters
-     * @param   array   $page_types
+     * @param   object $request
+     * @param   array  $filters
+     * @param   array  $task_to_action
+     * @param   array  $page_types
      *
      * @since   1.0
      */
     public function __construct(
         $request,
-        $url_force_ssl,
-        $application_home_catalog_id,
-        $application_path,
-        $application_id,
-        $base_url,
-        array $task_to_action = array(),
         array $filters = array(),
+        array $task_to_action = array(),
         array $page_types = array()
     ) {
-        $this->request                     = $request;
-        $this->url_force_ssl               = $url_force_ssl;
-        $this->application_home_catalog_id = $application_home_catalog_id;
-        $this->application_path            = $application_path;
-        $this->application_id              = $application_id;
-        $this->base_url                    = $base_url;
-        $this->filters                     = $filters;
-        $this->task_to_action              = $task_to_action;
+        $this->request        = $request;
+        $this->filters        = $filters;
+        $this->task_to_action = $task_to_action;
 
         if ($page_types === array()) {
         } else {
             $this->page_types = $page_types;
         }
 
+        $this->setClassProperties();
         $this->initialiseRoute();
+    }
+
+    /**
+     * Set class properties for several values within $request object
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    protected function setClassProperties()
+    {
+        $properties = array(
+            'url_force_ssl',
+            'application_home_catalog_id',
+            'application_path',
+            'application_id',
+            'base_url'
+        );
+
+        foreach ($properties as $property_name) {
+            $this->setClassProperty($property_name);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Initialise Single Property
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    protected function setClassProperty($property_name)
+    {
+        $this->$property_name = $this->request->$property_name;
+        unset($this->request->$property_name);
+
+        return $this;
     }
 
     /**
@@ -168,8 +192,7 @@ abstract class AbstractAdapter implements RouteInterface
         $this->route->base_url            = '';
         $this->route->path                = '';
         $this->route->post_variable_array = array();
-        $this->route->request_task        = '';
-        $this->route->request_task_values = array();
+        $this->route->filters             = array();
         $this->route->model_name          = '';
         $this->route->model_type          = '';
         $this->route->model_registry_name = '';
