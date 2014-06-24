@@ -84,11 +84,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
      */
     public function verifyHomeIndex()
     {
-        if ($this->application_path === 'index.php'
-            || $this->application_path === 'index.php/'
-            || $this->application_path === 'index.php?'
-            || $this->application_path === '/index.php/'
-        ) {
+        if (in_array($this->application_path, array('index.php', 'index.php/', 'index.php?', '/index.php/'))) {
             $this->setHomeRedirect();
 
             return true;

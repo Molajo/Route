@@ -137,7 +137,7 @@ class Database extends AbstractRequest implements RouteInterface
         $comparison_operator,
         $filter,
         $compare_to
-    ) {
+     ) {
         $this->resource_query->where(
             'column',
             $this->resource_query->getModelRegistry('primary_prefix', 'a') . '.' . $column_name,
