@@ -204,7 +204,7 @@ class RouteHomePath extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($route->route_found, null);
         $this->assertEquals($route->error_code, 0);
-        $this->assertEquals($route->redirect_to_url, null);
+        $this->assertEquals($route->redirect_to_id, null);
         $this->assertEquals($route->home, 1);
         $this->assertEquals($route->catalog_id, 1072);
         $this->assertEquals($route->action, '');
@@ -268,7 +268,7 @@ class RouteHomePath extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($route->route_found, null);
         $this->assertEquals($route->error_code, 301);
-        $this->assertEquals($route->redirect_to_url, 1072);
+        $this->assertEquals($route->redirect_to_id, 1072);
         $this->assertEquals($route->home, 0);
         $this->assertEquals($route->catalog_id, 0);
         $this->assertEquals($route->action, '');
@@ -332,7 +332,7 @@ class RouteHomePath extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($route->route_found, null);
         $this->assertEquals($route->error_code, 301);
-        $this->assertEquals($route->redirect_to_url, 1072);
+        $this->assertEquals($route->redirect_to_id, 1072);
         $this->assertEquals($route->home, 0);
         $this->assertEquals($route->catalog_id, 0);
         $this->assertEquals($route->action, '');

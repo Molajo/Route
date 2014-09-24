@@ -97,6 +97,7 @@ class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, 
                 'Route: Could not instantiate Adapter'
             );
         }
+
         return $this;
     }
 
@@ -136,8 +137,6 @@ class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, 
         $this->dependencies['Runtimedata']->page_type = $results->page_type;
         $this->dependencies['Runtimedata']->route     = $this->sortObject($results);
 
-        $this->product_result = $results;
-
         return $this;
     }
 
@@ -165,18 +164,26 @@ class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, 
      */
     protected function getAdapter()
     {
-        $url_force_ssl
-            = $this->dependencies['Runtimedata']->application->parameters->url_force_ssl;
-        $application_home_catalog_id
+        if ($this->dependencies['Runtimedata']->application->parameters->url_force_ssl === 1) {
+            $this->dependencies['Request']->url_force_ssl = 1;
+        } else {
+            $this->dependencies['Request']->url_force_ssl = 0;
+        }
+
+        $this->dependencies['Request']->application_home_catalog_id
             = $this->dependencies['Runtimedata']->application->parameters->application_home_catalog_id;
-        $application_path
+        $this->dependencies['Request']->application_path
             = $this->dependencies['Runtimedata']->application->path;
-        $application_id
+        $this->dependencies['Request']->application_id
             = $this->dependencies['Runtimedata']->application->id;
-        $base_url
+        $this->dependencies['Request']->base_url
             = $this->dependencies['Runtimedata']->application->base_url;
 
-        $query = $this->dependencies['Resource']->get(
+        $task_to_action = array();
+
+        $page_types = array();
+
+        $resource_query = $this->dependencies['Resource']->get(
             'query:///Molajo//Model//Datasource//Catalog.xml',
             array('runtime_data' => $this->dependencies['Runtimedata'])
         );
@@ -186,13 +193,10 @@ class RouteFactoryMethod extends FactoryMethodBase implements FactoryInterface, 
         try {
             return new $class(
                 $this->dependencies['Request'],
-                $url_force_ssl,
-                $application_home_catalog_id,
-                $application_path,
-                $application_id,
-                $base_url,
                 $this->dependencies['Filters'],
-                $query
+                $task_to_action,
+                $page_types,
+                $resource_query
             );
 
         } catch (Exception $e) {

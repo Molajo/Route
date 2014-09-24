@@ -70,7 +70,6 @@ class Database extends AbstractRequest implements RouteInterface
         $this->buildRouteQuery();
 
         $item = $this->runRouteQuery();
-
         if (count($item) === 0 || $item === false) {
             return $this->setRouteNotFound();
         }
@@ -85,41 +84,44 @@ class Database extends AbstractRequest implements RouteInterface
     }
 
     /**
-     * Execute Route Query
-     *
-     * @return  $this
-     * @since   1.0
-     */
-    public function runRouteQuery()
-    {
-        try {
-            $item = $this->resource_query->getData();
-
-        } catch (Exception $e) {
-            throw new RuntimeException($e->getMessage());
-        }
-
-        return $item;
-    }
-
-    /**
      * Set Route Query
      *
      * @return  $this
      * @since   1.0
      */
-    public function buildRouteQuery()
+    protected function buildRouteQuery()
     {
         $this->resource_query->setModelRegistry('use_special_joins', 1);
         $this->resource_query->setModelRegistry('process_events', 0);
         $this->resource_query->setModelRegistry('query_object', 'item');
 
-        $this->buildRouteQueryWhereClause('sef_request', '=', 'string', $this->route->path);
-        $this->buildRouteQueryWhereClause('page_type', '<>', 'string', 'link');
         $this->buildRouteQueryWhereClause('enabled', '=', 'integer', 1);
         $this->buildRouteQueryWhereClause('application_id', '=', 'integer', $this->application_id);
+        $this->buildRouteQueryWhereClause('page_type', '<>', 'string', 'link');
+
+        if ($this->route->home === 1) {
+            $this->buildRouteQueryWhereClause('id', '<>', 'integer', $this->route->catalog_id);
+        } else {
+            $this->buildRouteQueryWhereClause('sef_request', '=', 'string', $this->route->path);
+        }
 
         return $this;
+    }
+
+    /**
+     * Execute Route Query
+     *
+     * @return  $this
+     * @since   1.0
+     */
+    protected function runRouteQuery()
+    {
+        try {
+            return $this->resource_query->getData();
+
+        } catch (Exception $e) {
+            throw new RuntimeException($e->getMessage());
+        }
     }
 
     /**
@@ -137,7 +139,7 @@ class Database extends AbstractRequest implements RouteInterface
         $comparison_operator,
         $filter,
         $compare_to
-     ) {
+    ) {
         $this->resource_query->where(
             'column',
             $this->resource_query->getModelRegistry('primary_prefix', 'a') . '.' . $column_name,

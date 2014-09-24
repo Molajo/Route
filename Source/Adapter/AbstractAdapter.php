@@ -186,6 +186,7 @@ abstract class AbstractAdapter implements RouteInterface
         $this->route->route_found         = null;
         $this->route->error_code          = 0;
         $this->route->redirect_to_url     = null;
+        $this->route->redirect_to_id      = null;
         $this->route->home                = 0;
         $this->route->catalog_id          = 0;
         $this->route->action              = '';
@@ -220,7 +221,7 @@ abstract class AbstractAdapter implements RouteInterface
         }
 
         $this->route->error_code      = 301;
-        $this->route->redirect_to_url = $this->application_home_catalog_id;
+        $this->route->redirect_to_id  = $this->application_home_catalog_id;
 
         return $this->route;
     }
