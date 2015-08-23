@@ -46,9 +46,9 @@
         <metrics loc="25" ncloc="12" classes="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="0" elements="2" coveredelements="0"/>
       </file>
     </package>
-    <package name="Molajo\Route\Adapter">
+    <package name="Molajo\Route\Controller">
       <file name="/Users/amystephen/Sites/Molajo/Route/Source/Adapter/AbstractAdapter.php">
-        <class name="AbstractAdapter" namespace="Molajo\Route\Adapter">
+        <class name="AbstractAdapter" namespace="Molajo\Route\Controller">
           <metrics methods="6" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="46" coveredstatements="23" elements="52" coveredelements="25"/>
         </class>
         <line num="120" type="method" name="__construct" crap="6" count="0"/>
@@ -107,7 +107,7 @@
         <metrics loc="239" ncloc="121" classes="1" methods="6" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="46" coveredstatements="23" elements="52" coveredelements="24"/>
       </file>
       <file name="/Users/amystephen/Sites/Molajo/Route/Source/Adapter/AbstractRequest.php">
-        <class name="AbstractRequest" namespace="Molajo\Route\Adapter">
+        <class name="AbstractRequest" namespace="Molajo\Route\Controller">
           <metrics methods="15" coveredmethods="14" conditionals="0" coveredconditionals="0" statements="81" coveredstatements="62" elements="96" coveredelements="76"/>
         </class>
         <line num="30" type="method" name="setRequest" crap="1" count="2"/>
@@ -210,7 +210,7 @@
         <metrics loc="329" ncloc="194" classes="1" methods="15" coveredmethods="9" conditionals="0" coveredconditionals="0" statements="81" coveredstatements="62" elements="96" coveredelements="71"/>
       </file>
       <file name="/Users/amystephen/Sites/Molajo/Route/Source/Adapter/AbstractVerifyHome.php">
-        <class name="AbstractVerifyHome" namespace="Molajo\Route\Adapter">
+        <class name="AbstractVerifyHome" namespace="Molajo\Route\Controller">
           <metrics methods="6" coveredmethods="4" conditionals="0" coveredconditionals="0" statements="26" coveredstatements="18" elements="32" coveredelements="22"/>
         </class>
         <line num="29" type="method" name="verifyHome" crap="4.05" count="3"/>
@@ -249,7 +249,7 @@
         <metrics loc="123" ncloc="72" classes="1" methods="6" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="26" coveredstatements="18" elements="32" coveredelements="20"/>
       </file>
       <file name="/Users/amystephen/Sites/Molajo/Route/Source/Adapter/Database.php">
-        <class name="Database" namespace="Molajo\Route\Adapter" fullPackage="Molajo" package="Molajo">
+        <class name="Database" namespace="Molajo\Route\Controller" fullPackage="Molajo" package="Molajo">
           <metrics methods="8" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="51" coveredstatements="7" elements="59" coveredelements="8"/>
         </class>
         <line num="45" type="method" name="__construct" crap="1" count="8"/>

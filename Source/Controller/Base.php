@@ -1,25 +1,25 @@
 <?php
 /**
- * Abstract Route Adapter
+ * Route Builder Base
  *
  * @package    Molajo
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @copyright  2014 Amy Stephen. All rights reserved.
+ * @copyright  2014-2015 Amy Stephen. All rights reserved.
  */
-namespace Molajo\Route\Adapter;
+namespace Molajo\Route\Controller;
 
 use CommonApi\Route\RouteInterface;
 use stdClass;
 
 /**
- * Abstract Route Adapter
+ * Route Builder Base
  *
  * @author     Amy Stephen
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @copyright  2014 Amy Stephen. All rights reserved.
+ * @copyright  2014-2015 Amy Stephen. All rights reserved.
  * @since      1.0.0
  */
-abstract class AbstractAdapter implements RouteInterface
+abstract class Base implements RouteInterface
 {
     /**
      * Request Object
@@ -38,28 +38,12 @@ abstract class AbstractAdapter implements RouteInterface
     protected $url_force_ssl;
 
     /**
-     * Application Home Catalog ID
-     *
-     * @var    integer
-     * @since  1.0
-     */
-    protected $application_home_catalog_id;
-
-    /**
      * Application Path
      *
      * @var    string
      * @since  1.0
      */
     protected $application_path;
-
-    /**
-     * Application ID
-     *
-     * @var    integer
-     * @since  1.0
-     */
-    protected $application_id;
 
     /**
      * Base URL
@@ -86,6 +70,22 @@ abstract class AbstractAdapter implements RouteInterface
     protected $filters;
 
     /**
+     * Actions
+     *
+     * @var    array
+     * @since  1.0
+     */
+    protected $actions;
+
+    /**
+     * Valid Actions
+     *
+     * @var    array
+     * @since  1.0
+     */
+    protected $valid_actions;
+
+    /**
      * Route
      *
      * @var    object
@@ -108,23 +108,52 @@ abstract class AbstractAdapter implements RouteInterface
         );
 
     /**
+     * Home Route
+     *
+     * @var    object
+     * @since  1.0
+     */
+    protected $home_route = null;
+
+    /**
+     * Page Type Routes
+     *
+     * @var    object
+     * @since  1.0
+     */
+    protected $page_type_routes = null;
+
+    /**
+     * Resource Routes
+     *
+     * @var    object
+     * @since  1.0
+     */
+    protected $resource_routes = null;
+
+    /**
      * Constructor
      *
      * @param   object $request
      * @param   array  $filters
+     * @param   array  $actions
      * @param   array  $task_to_action
      * @param   array  $page_types
+     * @param   array  $routes
      *
-     * @since   1.0
+     * @since   1.0.0
      */
     public function __construct(
         $request,
         array $filters = array(),
+        array $actions = array(),
         array $task_to_action = array(),
-        array $page_types = array()
+        array $page_types = array(),
+        array $routes = array()
     ) {
         $this->request        = $request;
         $this->filters        = $filters;
+        $this->actions        = $actions;
         $this->task_to_action = $task_to_action;
 
         if ($page_types === array()) {
@@ -134,21 +163,23 @@ abstract class AbstractAdapter implements RouteInterface
 
         $this->setClassProperties();
         $this->initialiseRoute();
+
+        $this->home_route       = $routes['home'];
+        $this->page_type_routes = $routes['page_types'];
+        $this->resource_routes  = $routes['resources'];
     }
 
     /**
      * Set class properties for several values within $request object
      *
      * @return  $this
-     * @since   1.0
+     * @since   1.0.0
      */
     protected function setClassProperties()
     {
         $properties = array(
             'url_force_ssl',
-            'application_home_catalog_id',
             'application_path',
-            'application_id',
             'base_url'
         );
 
@@ -163,8 +194,9 @@ abstract class AbstractAdapter implements RouteInterface
      * Initialise Single Property
      *
      * @param string $property_name
+     *
      * @return  $this
-     * @since   1.0
+     * @since   1.0.0
      */
     protected function setClassProperty($property_name)
     {
@@ -178,7 +210,7 @@ abstract class AbstractAdapter implements RouteInterface
      * Initialise Route Object
      *
      * @return  $this
-     * @since   1.0
+     * @since   1.0.0
      */
     protected function initialiseRoute()
     {
@@ -186,13 +218,12 @@ abstract class AbstractAdapter implements RouteInterface
         $this->route->route_found         = null;
         $this->route->error_code          = 0;
         $this->route->redirect_to_url     = null;
-        $this->route->redirect_to_id      = null;
         $this->route->home                = 0;
-        $this->route->catalog_id          = 0;
         $this->route->action              = '';
+        $this->route->special_action      = '';
         $this->route->method              = '';
         $this->route->base_url            = '';
-        $this->route->path                = '';
+        $this->route->path                = null;
         $this->route->post_variable_array = array();
         $this->route->filters             = array();
         $this->route->model_name          = '';
@@ -204,37 +235,21 @@ abstract class AbstractAdapter implements RouteInterface
     }
 
     /**
-     * Determine if secure protocol required and in use
+     * Set Route Values
+     *
+     * @param   object
      *
      * @return  object
-     * @throws  \CommonApi\Exception\RuntimeException
-     * @since   1.0
+     * @since   1.0.0
      */
-    public function verifySecureProtocol()
+    protected function setRouteValues($object)
     {
-        if ((int)$this->url_force_ssl === 0) {
-            return $this->route;
-        }
+        $this->route->route_found = 1;
+        $this->route->home        = $object->home;
+        $this->route->page_type   = $object->page_type;
+        $this->route->model_type  = $object->model_type;
+        $this->route->model_name  = $object->model_name;
 
-        if ((int)$this->request->secure === 1) {
-            return $this->route;
-        }
-
-        $this->route->error_code      = 301;
-        $this->route->redirect_to_id  = $this->application_home_catalog_id;
-
-        return $this->route;
-    }
-
-    /**
-     * Set Route
-     *
-     * @return  object
-     * @throws  \CommonApi\Exception\RuntimeException
-     * @since   1.0
-     */
-    public function setRoute()
-    {
-        return $this->route;
+        return $this;
     }
 }

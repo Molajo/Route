@@ -1,9 +1,9 @@
 <?php
 /**
- * Adapter for Route
+ * Route Controller
  *
  * @package    Molajo
- * @copyright  2014 Amy Stephen. All rights reserved.
+ * @copyright  2014-2015 Amy Stephen. All rights reserved.
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  */
 namespace Molajo\Route;
@@ -11,20 +11,20 @@ namespace Molajo\Route;
 use CommonApi\Route\RouteInterface;
 
 /**
- * Route Driver
+ * Route Controller
  *
  * @package    Molajo
- * @copyright  2014 Amy Stephen. All rights reserved.
+ * @copyright  2014-2015 Amy Stephen. All rights reserved.
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
  * @since      1.0.0
  */
-class Driver implements RouteInterface
+class Controller implements RouteInterface
 {
     /**
-     * Route Driver
+     * Route Controller
      *
      * @var     object  CommonApi\Route\RouteInterface
-     * @since   1.0
+     * @since   1.0.0
      */
     protected $route;
 
@@ -33,7 +33,7 @@ class Driver implements RouteInterface
      *
      * @param  RouteInterface $route
      *
-     * @since   1.0
+     * @since   1.0.0
      */
     public function __construct(
         RouteInterface $route = null
@@ -45,7 +45,7 @@ class Driver implements RouteInterface
      * Determine if secure protocol required and in use
      *
      * @return  object
-     * @since   1.0
+     * @since   1.0.0
      */
     public function verifySecureProtocol()
     {
@@ -56,7 +56,7 @@ class Driver implements RouteInterface
      * Determine if request is for home page
      *
      * @return  object
-     * @since   1.0
+     * @since   1.0.0
      */
     public function verifyHome()
     {
@@ -67,7 +67,7 @@ class Driver implements RouteInterface
      * Set Action from HTTP Method
      *
      * @return  object
-     * @since   1.0
+     * @since   1.0.0
      */
     public function setRequest()
     {
@@ -78,7 +78,7 @@ class Driver implements RouteInterface
      * Set Route
      *
      * @return  object
-     * @since   1.0
+     * @since   1.0.0
      */
     public function setRoute()
     {

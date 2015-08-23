@@ -4,9 +4,9 @@
  *
  * @package    Molajo
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @copyright  2014 Amy Stephen. All rights reserved.
+ * @copyright  2014-2015 Amy Stephen. All rights reserved.
  */
-namespace Molajo\Route\Adapter;
+namespace Molajo\Route\Controller;
 
 use CommonApi\Route\RouteInterface;
 
@@ -15,16 +15,16 @@ use CommonApi\Route\RouteInterface;
  *
  * @author     Amy Stephen
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @copyright  2014 Amy Stephen. All rights reserved.
+ * @copyright  2014-2015 Amy Stephen. All rights reserved.
  * @since      1.0.0
  */
-abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterface
+abstract class Home extends Base implements RouteInterface
 {
     /**
      * Determine if request is for home page
      *
      * @return  object
-     * @since   1.0
+     * @since   1.0.0
      */
     public function verifyHome()
     {
@@ -47,14 +47,14 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
      * Home: application path
      *
      * @return  boolean
-     * @since   1.0
+     * @since   1.0.0
      */
     protected function verifyHomeEmptyPath()
     {
         if (strlen($this->application_path) === 0
             || $this->application_path === ''
         ) {
-            return $this->setHomeCatalog();
+            return $this->setHome();
         }
 
         return false;
@@ -64,7 +64,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
      * Home: slash (redirect)
      *
      * @return  boolean
-     * @since   1.0
+     * @since   1.0.0
      */
     protected function verifyHomeSlash()
     {
@@ -80,7 +80,7 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
      * Home: index.php (redirect)
      *
      * @return  boolean
-     * @since   1.0
+     * @since   1.0.0
      */
     public function verifyHomeIndex()
     {
@@ -94,29 +94,26 @@ abstract class AbstractVerifyHome extends AbstractAdapter implements RouteInterf
     }
 
     /**
-     * Home: set redirect
+     * Home: Set Catalog ID
      *
      * @return  boolean
-     * @since   1.0
+     * @since   1.0.0
      */
-    protected function setHomeCatalog()
+    protected function setHome()
     {
-        $this->route->catalog_id = $this->application_home_catalog_id;
-        $this->route->home       = 1;
-
-        return true;
+        return $this->setRouteValues($this->home_route);
     }
 
     /**
-     * Home: set redirect
+     * Home: Set Redirect
      *
      * @return  $this
-     * @since   1.0
+     * @since   1.0.0
      */
     protected function setHomeRedirect()
     {
-        $this->route->error_code      = 301;
-        $this->route->redirect_to_url = $this->application_home_catalog_id;
+        $this->route->error_code      = 404;
+        $this->route->redirect_to_url = $this->base_url . $this->home_route->sef_request;
 
         return $this;
     }

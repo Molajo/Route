@@ -4,22 +4,22 @@
  *
  * @package    Molajo
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @copyright  2014 Amy Stephen. All rights reserved.
+ * @copyright  2014-2015 Amy Stephen. All rights reserved.
  */
 namespace Molajo\Route;
 
 use stdClass;
-use Molajo\Route\Adapter\Database;
+use Molajo\Route\Controller\Database;
 use Molajo\Query\MockReadController;
 
-use Molajo\Route\Driver;
+use Molajo\Route\Controller;
 
 /**
  * Route Home Path
  *
  * @author     Amy Stephen
  * @license    http://www.opensource.org/licenses/mit-license.html MIT License
- * @copyright  2014 Amy Stephen. All rights reserved.
+ * @copyright  2014-2015 Amy Stephen. All rights reserved.
  * @since      1.0.0
  */
 class RouteHomePath extends \PHPUnit_Framework_TestCase
@@ -32,33 +32,33 @@ class RouteHomePath extends \PHPUnit_Framework_TestCase
     /**
      * Get the Route Adapter Handler
      *
-     * @covers  Molajo\Route\Driver::__construct
-     * @covers  Molajo\Route\Driver::verifySecureProtocol
-     * @covers  Molajo\Route\Driver::verifyHome
-     * @covers  Molajo\Route\Driver::setRequest
-     * @covers  Molajo\Route\Driver::setRoute
-     * @covers  Molajo\Route\Adapter\Database::__construct
-     * @covers  Molajo\Route\Adapter\Database::setRoute
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setRequest
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setAction
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setBaseUrl
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setRequestVariables
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setParameters
-     * @covers  Molajo\Route\Adapter\AbstractRequest::removePathSlash
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getParameters
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getParameterPairs
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getPath
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getNode
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setIndexAtMax
-     * @covers  Molajo\Route\Adapter\AbstractRequest::decrementIndex
-     * @covers  Molajo\Route\Adapter\AbstractRequest::parseParameterPair
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setPageType
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHome
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeEmptyPath
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeSlash
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeIndex
-     * @covers  Molajo\Route\Adapter\AbstractAdapter::initialiseRoute
-     * @covers  Molajo\Route\Adapter\AbstractAdapter::verifySecureProtocol
+     * @covers  Molajo\Route\Controller::__construct
+     * @covers  Molajo\Route\Controller::verifySecureProtocol
+     * @covers  Molajo\Route\Controller::verifyHome
+     * @covers  Molajo\Route\Controller::setRequest
+     * @covers  Molajo\Route\Controller::setRoute
+     * @covers  Molajo\Route\Controller\Database::__construct
+     * @covers  Molajo\Route\Controller\Database::setRoute
+     * @covers  Molajo\Route\Controller\AbstractRequest::setRequest
+     * @covers  Molajo\Route\Controller\AbstractRequest::setAction
+     * @covers  Molajo\Route\Controller\AbstractRequest::setBaseUrl
+     * @covers  Molajo\Route\Controller\AbstractRequest::setRequestVariables
+     * @covers  Molajo\Route\Controller\AbstractRequest::setParameters
+     * @covers  Molajo\Route\Controller\AbstractRequest::removePathSlash
+     * @covers  Molajo\Route\Controller\AbstractRequest::getParameters
+     * @covers  Molajo\Route\Controller\AbstractRequest::getParameterPairs
+     * @covers  Molajo\Route\Controller\AbstractRequest::getPath
+     * @covers  Molajo\Route\Controller\AbstractRequest::getNode
+     * @covers  Molajo\Route\Controller\AbstractRequest::setIndexAtMax
+     * @covers  Molajo\Route\Controller\AbstractRequest::decrementIndex
+     * @covers  Molajo\Route\Controller\AbstractRequest::parseParameterPair
+     * @covers  Molajo\Route\Controller\AbstractRequest::setPageType
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHome
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeEmptyPath
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeSlash
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeIndex
+     * @covers  Molajo\Route\Controller\AbstractAdapter::initialiseRoute
+     * @covers  Molajo\Route\Controller\AbstractAdapter::verifySecureProtocol
      */
     protected function getAdapter(
         $url_force_ssl = 0,
@@ -124,33 +124,33 @@ class RouteHomePath extends \PHPUnit_Framework_TestCase
     /**
      * Initialises Adapter
      *
-     * @covers  Molajo\Route\Driver::__construct
-     * @covers  Molajo\Route\Driver::verifySecureProtocol
-     * @covers  Molajo\Route\Driver::verifyHome
-     * @covers  Molajo\Route\Driver::setRequest
-     * @covers  Molajo\Route\Driver::setRoute
-     * @covers  Molajo\Route\Adapter\Database::__construct
-     * @covers  Molajo\Route\Adapter\Database::setRoute
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setRequest
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setAction
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setBaseUrl
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setRequestVariables
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setParameters
-     * @covers  Molajo\Route\Adapter\AbstractRequest::removePathSlash
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getParameters
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getParameterPairs
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getPath
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getNode
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setIndexAtMax
-     * @covers  Molajo\Route\Adapter\AbstractRequest::decrementIndex
-     * @covers  Molajo\Route\Adapter\AbstractRequest::parseParameterPair
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setPageType
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHome
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeEmptyPath
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeSlash
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeIndex
-     * @covers  Molajo\Route\Adapter\AbstractAdapter::initialiseRoute
-     * @covers  Molajo\Route\Adapter\AbstractAdapter::verifySecureProtocol
+     * @covers  Molajo\Route\Controller::__construct
+     * @covers  Molajo\Route\Controller::verifySecureProtocol
+     * @covers  Molajo\Route\Controller::verifyHome
+     * @covers  Molajo\Route\Controller::setRequest
+     * @covers  Molajo\Route\Controller::setRoute
+     * @covers  Molajo\Route\Controller\Database::__construct
+     * @covers  Molajo\Route\Controller\Database::setRoute
+     * @covers  Molajo\Route\Controller\AbstractRequest::setRequest
+     * @covers  Molajo\Route\Controller\AbstractRequest::setAction
+     * @covers  Molajo\Route\Controller\AbstractRequest::setBaseUrl
+     * @covers  Molajo\Route\Controller\AbstractRequest::setRequestVariables
+     * @covers  Molajo\Route\Controller\AbstractRequest::setParameters
+     * @covers  Molajo\Route\Controller\AbstractRequest::removePathSlash
+     * @covers  Molajo\Route\Controller\AbstractRequest::getParameters
+     * @covers  Molajo\Route\Controller\AbstractRequest::getParameterPairs
+     * @covers  Molajo\Route\Controller\AbstractRequest::getPath
+     * @covers  Molajo\Route\Controller\AbstractRequest::getNode
+     * @covers  Molajo\Route\Controller\AbstractRequest::setIndexAtMax
+     * @covers  Molajo\Route\Controller\AbstractRequest::decrementIndex
+     * @covers  Molajo\Route\Controller\AbstractRequest::parseParameterPair
+     * @covers  Molajo\Route\Controller\AbstractRequest::setPageType
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHome
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeEmptyPath
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeSlash
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeIndex
+     * @covers  Molajo\Route\Controller\AbstractAdapter::initialiseRoute
+     * @covers  Molajo\Route\Controller\AbstractAdapter::verifySecureProtocol
      */
     protected function getRouteDriver($adapter)
     {
@@ -160,36 +160,36 @@ class RouteHomePath extends \PHPUnit_Framework_TestCase
     /**
      * verifyHome -- verifyHomeEmptyPath
      *
-     * @covers  Molajo\Route\Driver::__construct
-     * @covers  Molajo\Route\Driver::verifySecureProtocol
-     * @covers  Molajo\Route\Driver::verifyHome
-     * @covers  Molajo\Route\Driver::setRequest
-     * @covers  Molajo\Route\Driver::setRoute
-     * @covers  Molajo\Route\Adapter\Database::__construct
-     * @covers  Molajo\Route\Adapter\Database::setRoute
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setRequest
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setAction
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setBaseUrl
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setRequestVariables
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setParameters
-     * @covers  Molajo\Route\Adapter\AbstractRequest::removePathSlash
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getParameters
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getParameterPairs
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getPath
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getNode
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setIndexAtMax
-     * @covers  Molajo\Route\Adapter\AbstractRequest::decrementIndex
-     * @covers  Molajo\Route\Adapter\AbstractRequest::parseParameterPair
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setPageType
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHome
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeEmptyPath
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeSlash
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeIndex
-     * @covers  Molajo\Route\Adapter\AbstractAdapter::initialiseRoute
-     * @covers  Molajo\Route\Adapter\AbstractAdapter::verifySecureProtocol
+     * @covers  Molajo\Route\Controller::__construct
+     * @covers  Molajo\Route\Controller::verifySecureProtocol
+     * @covers  Molajo\Route\Controller::verifyHome
+     * @covers  Molajo\Route\Controller::setRequest
+     * @covers  Molajo\Route\Controller::setRoute
+     * @covers  Molajo\Route\Controller\Database::__construct
+     * @covers  Molajo\Route\Controller\Database::setRoute
+     * @covers  Molajo\Route\Controller\AbstractRequest::setRequest
+     * @covers  Molajo\Route\Controller\AbstractRequest::setAction
+     * @covers  Molajo\Route\Controller\AbstractRequest::setBaseUrl
+     * @covers  Molajo\Route\Controller\AbstractRequest::setRequestVariables
+     * @covers  Molajo\Route\Controller\AbstractRequest::setParameters
+     * @covers  Molajo\Route\Controller\AbstractRequest::removePathSlash
+     * @covers  Molajo\Route\Controller\AbstractRequest::getParameters
+     * @covers  Molajo\Route\Controller\AbstractRequest::getParameterPairs
+     * @covers  Molajo\Route\Controller\AbstractRequest::getPath
+     * @covers  Molajo\Route\Controller\AbstractRequest::getNode
+     * @covers  Molajo\Route\Controller\AbstractRequest::setIndexAtMax
+     * @covers  Molajo\Route\Controller\AbstractRequest::decrementIndex
+     * @covers  Molajo\Route\Controller\AbstractRequest::parseParameterPair
+     * @covers  Molajo\Route\Controller\AbstractRequest::setPageType
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHome
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeEmptyPath
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeSlash
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeIndex
+     * @covers  Molajo\Route\Controller\AbstractAdapter::initialiseRoute
+     * @covers  Molajo\Route\Controller\AbstractAdapter::verifySecureProtocol
      *
      * @return  $this
-     * @since   1.0
+     * @since   1.0.0
      */
     public function testVerifyHomeEmptyPath()
     {
@@ -204,7 +204,7 @@ class RouteHomePath extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($route->route_found, null);
         $this->assertEquals($route->error_code, 0);
-        $this->assertEquals($route->redirect_to_id, null);
+        $this->assertEquals($route->redirect_to_url, null);
         $this->assertEquals($route->home, 1);
         $this->assertEquals($route->catalog_id, 1072);
         $this->assertEquals($route->action, '');
@@ -224,36 +224,36 @@ class RouteHomePath extends \PHPUnit_Framework_TestCase
     /**
      * verifyHome -- verifyHomeSlash -- Redirect
      *
-     * @covers  Molajo\Route\Driver::__construct
-     * @covers  Molajo\Route\Driver::verifySecureProtocol
-     * @covers  Molajo\Route\Driver::verifyHome
-     * @covers  Molajo\Route\Driver::setRequest
-     * @covers  Molajo\Route\Driver::setRoute
-     * @covers  Molajo\Route\Adapter\Database::__construct
-     * @covers  Molajo\Route\Adapter\Database::setRoute
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setRequest
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setAction
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setBaseUrl
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setRequestVariables
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setParameters
-     * @covers  Molajo\Route\Adapter\AbstractRequest::removePathSlash
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getParameters
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getParameterPairs
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getPath
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getNode
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setIndexAtMax
-     * @covers  Molajo\Route\Adapter\AbstractRequest::decrementIndex
-     * @covers  Molajo\Route\Adapter\AbstractRequest::parseParameterPair
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setPageType
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHome
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeEmptyPath
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeSlash
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeIndex
-     * @covers  Molajo\Route\Adapter\AbstractAdapter::initialiseRoute
-     * @covers  Molajo\Route\Adapter\AbstractAdapter::verifySecureProtocol
+     * @covers  Molajo\Route\Controller::__construct
+     * @covers  Molajo\Route\Controller::verifySecureProtocol
+     * @covers  Molajo\Route\Controller::verifyHome
+     * @covers  Molajo\Route\Controller::setRequest
+     * @covers  Molajo\Route\Controller::setRoute
+     * @covers  Molajo\Route\Controller\Database::__construct
+     * @covers  Molajo\Route\Controller\Database::setRoute
+     * @covers  Molajo\Route\Controller\AbstractRequest::setRequest
+     * @covers  Molajo\Route\Controller\AbstractRequest::setAction
+     * @covers  Molajo\Route\Controller\AbstractRequest::setBaseUrl
+     * @covers  Molajo\Route\Controller\AbstractRequest::setRequestVariables
+     * @covers  Molajo\Route\Controller\AbstractRequest::setParameters
+     * @covers  Molajo\Route\Controller\AbstractRequest::removePathSlash
+     * @covers  Molajo\Route\Controller\AbstractRequest::getParameters
+     * @covers  Molajo\Route\Controller\AbstractRequest::getParameterPairs
+     * @covers  Molajo\Route\Controller\AbstractRequest::getPath
+     * @covers  Molajo\Route\Controller\AbstractRequest::getNode
+     * @covers  Molajo\Route\Controller\AbstractRequest::setIndexAtMax
+     * @covers  Molajo\Route\Controller\AbstractRequest::decrementIndex
+     * @covers  Molajo\Route\Controller\AbstractRequest::parseParameterPair
+     * @covers  Molajo\Route\Controller\AbstractRequest::setPageType
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHome
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeEmptyPath
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeSlash
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeIndex
+     * @covers  Molajo\Route\Controller\AbstractAdapter::initialiseRoute
+     * @covers  Molajo\Route\Controller\AbstractAdapter::verifySecureProtocol
      *
      * @return  $this
-     * @since   1.0
+     * @since   1.0.0
      */
     public function testVerifyHomeSlash()
     {
@@ -268,7 +268,7 @@ class RouteHomePath extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($route->route_found, null);
         $this->assertEquals($route->error_code, 301);
-        $this->assertEquals($route->redirect_to_id, 1072);
+        $this->assertEquals($route->redirect_to_url, 1072);
         $this->assertEquals($route->home, 0);
         $this->assertEquals($route->catalog_id, 0);
         $this->assertEquals($route->action, '');
@@ -288,36 +288,36 @@ class RouteHomePath extends \PHPUnit_Framework_TestCase
     /**
      * verifyHome -- verifyHomeSlash -- Redirect
      *
-     * @covers  Molajo\Route\Driver::__construct
-     * @covers  Molajo\Route\Driver::verifySecureProtocol
-     * @covers  Molajo\Route\Driver::verifyHome
-     * @covers  Molajo\Route\Driver::setRequest
-     * @covers  Molajo\Route\Driver::setRoute
-     * @covers  Molajo\Route\Adapter\Database::__construct
-     * @covers  Molajo\Route\Adapter\Database::setRoute
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setRequest
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setAction
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setBaseUrl
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setRequestVariables
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setParameters
-     * @covers  Molajo\Route\Adapter\AbstractRequest::removePathSlash
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getParameters
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getParameterPairs
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getPath
-     * @covers  Molajo\Route\Adapter\AbstractRequest::getNode
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setIndexAtMax
-     * @covers  Molajo\Route\Adapter\AbstractRequest::decrementIndex
-     * @covers  Molajo\Route\Adapter\AbstractRequest::parseParameterPair
-     * @covers  Molajo\Route\Adapter\AbstractRequest::setPageType
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHome
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeEmptyPath
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeSlash
-     * @covers  Molajo\Route\Adapter\AbstractVerifyHome::verifyHomeIndex
-     * @covers  Molajo\Route\Adapter\AbstractAdapter::initialiseRoute
-     * @covers  Molajo\Route\Adapter\AbstractAdapter::verifySecureProtocol
+     * @covers  Molajo\Route\Controller::__construct
+     * @covers  Molajo\Route\Controller::verifySecureProtocol
+     * @covers  Molajo\Route\Controller::verifyHome
+     * @covers  Molajo\Route\Controller::setRequest
+     * @covers  Molajo\Route\Controller::setRoute
+     * @covers  Molajo\Route\Controller\Database::__construct
+     * @covers  Molajo\Route\Controller\Database::setRoute
+     * @covers  Molajo\Route\Controller\AbstractRequest::setRequest
+     * @covers  Molajo\Route\Controller\AbstractRequest::setAction
+     * @covers  Molajo\Route\Controller\AbstractRequest::setBaseUrl
+     * @covers  Molajo\Route\Controller\AbstractRequest::setRequestVariables
+     * @covers  Molajo\Route\Controller\AbstractRequest::setParameters
+     * @covers  Molajo\Route\Controller\AbstractRequest::removePathSlash
+     * @covers  Molajo\Route\Controller\AbstractRequest::getParameters
+     * @covers  Molajo\Route\Controller\AbstractRequest::getParameterPairs
+     * @covers  Molajo\Route\Controller\AbstractRequest::getPath
+     * @covers  Molajo\Route\Controller\AbstractRequest::getNode
+     * @covers  Molajo\Route\Controller\AbstractRequest::setIndexAtMax
+     * @covers  Molajo\Route\Controller\AbstractRequest::decrementIndex
+     * @covers  Molajo\Route\Controller\AbstractRequest::parseParameterPair
+     * @covers  Molajo\Route\Controller\AbstractRequest::setPageType
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHome
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeEmptyPath
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeSlash
+     * @covers  Molajo\Route\Controller\AbstractVerifyHome::verifyHomeIndex
+     * @covers  Molajo\Route\Controller\AbstractAdapter::initialiseRoute
+     * @covers  Molajo\Route\Controller\AbstractAdapter::verifySecureProtocol
      *
      * @return  $this
-     * @since   1.0
+     * @since   1.0.0
      */
     public function testVerifyHomeIndex()
     {
@@ -332,7 +332,7 @@ class RouteHomePath extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($route->route_found, null);
         $this->assertEquals($route->error_code, 301);
-        $this->assertEquals($route->redirect_to_id, 1072);
+        $this->assertEquals($route->redirect_to_url, 1072);
         $this->assertEquals($route->home, 0);
         $this->assertEquals($route->catalog_id, 0);
         $this->assertEquals($route->action, '');

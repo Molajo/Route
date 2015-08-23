@@ -3,7 +3,11 @@
     "description": "Molajo Route Services for PHP Applications",
     "version": "1.0.0",
     "type": "molajo-package",
-    "keywords": ["route", "commonapi", "molajo"],
+    "keywords": [
+        "route",
+        "commonapi",
+        "molajo"
+    ],
     "homepage": "http://github.com/Molajo/Route",
     "license": "MIT",
     "authors": [
